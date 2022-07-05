@@ -1,0 +1,13 @@
+number g;
+
+function soma(number a, number b): number
+{
+    return a+b;
+}
+
+function main(number a, b): number
+{
+    g = 5;
+    number resultado;
+    resultado = soma(g,15);
+}
