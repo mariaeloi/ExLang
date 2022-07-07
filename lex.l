@@ -3,6 +3,8 @@
   	extern int yyerror (char *msg);  
 %}
 
+%option yylineno
+
 %%
 [ \t\n]                   ;
 "{"                       {printf("L_K: %s\n", yytext); return (L_K);}
