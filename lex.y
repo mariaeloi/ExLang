@@ -24,25 +24,35 @@ extern char * yytext;
 
 prog : decls funcs func_main				{}
 
-decls : decl                                {}
-    |	decl decls					        {}
-    ;
-funcs : FUNCTION ID L_P decl R_P COLON type L_K stmts R_K   {}
+decls : decl SEMI                              {}
+    |	decl SEMI decls					        {}
     ;
 
-func_main : FUNCTION MAIN L_P decl R_P COLON type L_K stmts R_K {}
+params : param                                {}
+    |	param COMMA params			        {}
     ;
 
-stmts : stmt     				            {}
+funcs : FUNCTION ID L_P params R_P COLON type L_K stmts R_K  {}
+    ;
+
+func_main : FUNCTION MAIN L_P params R_P COLON type L_K stmts R_K {}
+    ;
+
+func_call : ID L_P termlist R_P               {}
+
+stmts : stmt SEMI    				            {}
 	|	stmt SEMI stmts		    		    {}
     ;
 
 stmt :  return 								{}
-    |   decls								{}
+    |   decl								{}
     |   assign								{}
     ;
 
-decl : 	type idlist SEMI                    {} 
+decl : 	type idlist                    {} 
+    ;
+
+param : type ID                            {} 
     ;
 
 type : NUMBER 								{}
@@ -58,7 +68,21 @@ return : RETURN expr                        {}
 assign : ID ASSIGN expr                     {}
     ;
 
-expr :   ID                                 {}
+expr :   term                               {}
+    | ID op ID                              {}
+    | func_call                             {}
+    ;
+
+op :     PLUS                                   {}
+    |    MINUS                                  {}
+    ;
+
+termlist : term                                {}
+    |	term COMMA termlist			        {}
+    ;
+
+
+term :  ID                                 {}
 	| V_NUMBER 								{}
     ;
 
