@@ -1,0 +1,6 @@
+number g;
+
+function main(number a): number
+{
+    return g;
+}

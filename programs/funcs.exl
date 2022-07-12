@@ -1,0 +1,9 @@
+function teste(number a): number
+{
+    return a;
+}
+
+function main(number a): number
+{
+    return teste(g);
+}
