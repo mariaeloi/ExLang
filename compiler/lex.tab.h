@@ -90,7 +90,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 33 ".\\lex.y"
+#line 20 ".\\lex.y"
 
 	int    iValue; 	/* integer value */
 	char   cValue; 	/* char value */

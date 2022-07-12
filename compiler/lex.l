@@ -42,7 +42,7 @@
 "<"												{printf("LT: %s\n", yytext); return(LT);}
 ":"												{printf("COLON: %s\n", yytext); return(COLON);}
 "string"                  {printf("STRING: %s\n", yytext); return(STRING);}
-"number"                  {printf("NUMBER: %s\n", yytext); return(NUMBER);}
+"number"                  {yylval.sValue = strdup(yytext); printf("NUMBER: %s\n", yytext); return(NUMBER);}
 "char"                 		{printf("CHAR: %s\n", yytext); return(CHAR);}
 "boolean"              		{printf("BOOLEAN: %s\n", yytext); return(BOOLEAN);}
 "void"										{printf("VOID: %s\n", yytext); return(VOID);}
