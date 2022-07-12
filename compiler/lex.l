@@ -1,5 +1,10 @@
 %{
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <stdarg.h>
 	#include "lex.tab.h"
+
   	extern int yyerror (char *msg);  
 %}
 
@@ -47,7 +52,7 @@ true|false               	{printf("V_BOOLEAN: %s\n", yytext); return(V_BOOLEAN);
 ['].[']                  	{printf("V_CHAR: %s\n", yytext); return(V_CHAR);}
 [+-]?[0-9]+(\.[0-9]+)?		{printf("V_NUMBER: %s\n", yytext); return(V_NUMBER);}
 ["]([^"]*)["]             {printf("V_STRING: %s\n", yytext); return(V_STRING);} //Não está funcionando direito
-([a-z_]+[a-zA-Z0-9_]?)+   {printf("ID: %s\n", yytext); return(ID);}
+([a-z_]+[a-zA-Z0-9_]?)+   {yylval.sValue = strdup(yytext); printf("ID: %s\n", yytext); return(ID);}
 .                     		{fprintf(stderr, "invalid character: %s\n", yytext);}
 %%
 
