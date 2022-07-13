@@ -16,13 +16,20 @@ extern char * yytext;
 	int    iValue; 	/* integer value */
 	char   cValue; 	/* char value */
 	char * sValue;  /* string value */
-	};
+};
 
-%token  <sValue> ID
-%token  <iValue> V_NUMBER
-%token COLON FUNCTION CONST L_K R_K L_P R_P DO WHILE FOR IF ELSIF ELSE SEMI ASSIGN STRING CHAR BOOLEAN V_STRING V_CHAR V_BOOLEAN AND OR PLUS MINUS DIVIDE NE EQ GE LE GT LT VOID RETURN COMMA MAIN MULTY PERCENT
+%token<sValue> ID V_STRING V_BOOLEAN NUMBER STRING CHAR BOOLEAN
+%token<cValue> V_CHAR
+%token<iValue> V_NUMBER
+%token CONST VOID FUNCTION MAIN
+%token AND OR
+%token IF ELSIF ELSE DO WHILE FOR 
+%token ASSIGN PLUS MINUS DIVIDE MULTY PERCENT
+%token NE EQ GE LE GT LT
+%token RETURN 
+%token L_K R_K L_P R_P COLON SEMI COMMA
 
-%type<sValue> NUMBER
+%type<sValue> type idlist
 %start prog
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
@@ -44,7 +51,7 @@ params : param                                {}
     |	param COMMA params			        {}
     ;
 
-funcs : FUNCTION ID L_P params R_P COLON type L_K stmts R_K  { put_symbol($2, $7); }
+funcs : FUNCTION ID L_P params R_P COLON type L_K stmts R_K  {}
     ;
 
 func_main : FUNCTION MAIN {push_scope();} L_P params R_P COLON type L_K stmts R_K {pop_scope();}
@@ -61,7 +68,11 @@ stmt :  return 								{}
     |   assign								{}
     ;
 
-decl : 	type idlist                    {} 
+decl : 	type idlist {
+            char var_scope[0];
+            sprintf(var_scope, "%d.%s", top_scope(), $2);
+            insert_symbol(var_scope, $1); 
+        } 
     ;
 
 param : type ID                            {} 
@@ -70,8 +81,8 @@ param : type ID                            {}
 type : NUMBER 								{ $$ = $1; }
     ;
 
-idlist : ID                                 {}
-    |   ID COMMA idlist                     {}
+idlist : ID                                 { $$ = $1; }
+    |   ID COMMA idlist                     { $$ = $3; } // TODO corrigir pois só está pegando o último id
     ;
 
 return : RETURN expr                        {}
@@ -109,6 +120,5 @@ int main (void) {
 
 int yyerror (char *msg) {
 	fprintf (stderr, "%d: %s at '%s'\n", yylineno, msg, yytext);
-    /* printf("deu erro"); */
 	return 0;
 }

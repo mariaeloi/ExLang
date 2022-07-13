@@ -40,46 +40,46 @@
       know about them.  */
    enum yytokentype {
      ID = 258,
-     NUMBER = 259,
-     COLON = 260,
-     FUNCTION = 261,
-     CONST = 262,
-     L_K = 263,
-     R_K = 264,
-     L_P = 265,
-     R_P = 266,
-     DO = 267,
-     WHILE = 268,
-     FOR = 269,
-     IF = 270,
-     ELSIF = 271,
-     ELSE = 272,
-     SEMI = 273,
-     ASSIGN = 274,
-     STRING = 275,
-     CHAR = 276,
-     BOOLEAN = 277,
-     V_STRING = 278,
-     V_NUMBER = 279,
-     V_CHAR = 280,
-     V_BOOLEAN = 281,
-     AND = 282,
-     OR = 283,
-     PLUS = 284,
-     MINUS = 285,
-     DIVIDE = 286,
-     NE = 287,
-     EQ = 288,
-     GE = 289,
-     LE = 290,
-     GT = 291,
-     LT = 292,
-     VOID = 293,
-     RETURN = 294,
-     COMMA = 295,
-     MAIN = 296,
-     MULTY = 297,
-     PERCENT = 298
+     V_STRING = 259,
+     V_BOOLEAN = 260,
+     NUMBER = 261,
+     STRING = 262,
+     CHAR = 263,
+     BOOLEAN = 264,
+     V_CHAR = 265,
+     V_NUMBER = 266,
+     CONST = 267,
+     VOID = 268,
+     FUNCTION = 269,
+     MAIN = 270,
+     AND = 271,
+     OR = 272,
+     IF = 273,
+     ELSIF = 274,
+     ELSE = 275,
+     DO = 276,
+     WHILE = 277,
+     FOR = 278,
+     ASSIGN = 279,
+     PLUS = 280,
+     MINUS = 281,
+     DIVIDE = 282,
+     MULTY = 283,
+     PERCENT = 284,
+     NE = 285,
+     EQ = 286,
+     GE = 287,
+     LE = 288,
+     GT = 289,
+     LT = 290,
+     RETURN = 291,
+     L_K = 292,
+     R_K = 293,
+     L_P = 294,
+     R_P = 295,
+     COLON = 296,
+     SEMI = 297,
+     COMMA = 298
    };
 #endif
 
@@ -90,12 +90,12 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 20 ".\\lex.y"
+#line 15 ".\\lex.y"
 
 	int    iValue; 	/* integer value */
 	char   cValue; 	/* char value */
 	char * sValue;  /* string value */
-	
+
 
 
 /* Line 1676 of yacc.c  */

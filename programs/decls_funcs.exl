@@ -2,10 +2,18 @@ number g;
 
 function teste(number a): number
 {
+    number c;
+    number e;
+    number c;
+
     return a;
 }
 
 function main(number a): number
 {
+    number b, c;
+    number d;
+
     return teste(g);
+    number e;
 }

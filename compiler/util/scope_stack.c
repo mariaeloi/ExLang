@@ -34,5 +34,6 @@ int pop_scope() {
 
 int top_scope() {
     printf("SCOPE_STACK.top(): %d\n", SCOPE_STACK.stack[SCOPE_STACK.top]);
-    return SCOPE_STACK.top;
+    // return SCOPE_STACK.top;
+    return SCOPE_STACK.stack[SCOPE_STACK.top];
 }

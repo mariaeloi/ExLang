@@ -1,4 +1,8 @@
 number g;
+number a, b, c;
+number d;
+number e;
+number c;
 
 function main(number a): number
 {
