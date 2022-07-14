@@ -3,8 +3,6 @@ number t;
 function teste(number a): number
 {
     number c;
-    number a;
-    number c;
 
     return a;
 }

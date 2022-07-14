@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "util/scope_stack.c"
 #include "util/symbol_table.c"
 
 int yylex(void);
@@ -53,7 +52,7 @@ struct metaDataPaF {
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
 
-prog : {push_scope("0");} body				{}
+prog : {push_stack(&SCOPE_STACK, "0");} body				{}
     ;
 
 body : func_main {}
@@ -67,14 +66,14 @@ decls : decl SEMI                              {}
     ;
 
 
-funcs : FUNCTION ID {push_scope($2);} L_P params {
+funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params {
     char var_scope[1];
-    sprintf(var_scope, "%s.%s", top_scope(), $5->id);
+    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $5->id);
     insert_symbol(var_scope, $5->type);
-} R_P COLON result_type L_K stmts R_K  {pop_scope();}
+} R_P COLON result_type L_K stmts R_K  {pop_stack(&SCOPE_STACK);}
     ;
 
-func_main : FUNCTION MAIN {push_scope("main");} L_P params R_P COLON type L_K stmts R_K {pop_scope();}
+func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params R_P COLON type L_K stmts R_K {pop_stack(&SCOPE_STACK);}
     ;
 
 func_call : ID L_P termlist R_P               {}
@@ -89,8 +88,8 @@ stmt :  return 								{}
     ;
 
 decl : 	type idlist {
-            char var_scope[1];
-            sprintf(var_scope, "%s.%s", top_scope(), $2);
+            char var_scope[MAXSIZE_STRING];
+            sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $2);
             insert_symbol(var_scope, $1->type); 
         } 
     ;
@@ -151,10 +150,8 @@ termlist : term                                {}
 
 
 term :  ID {
-            char var_scope[1];
-            sprintf(var_scope, "%s.%s", top_scope(), $1);
-            if(!search(var_scope)){
-                printf("->> %s <<-", var_scope);
+            if(!search($1)){
+                printf("->> %s <<-", $1);
                 yyerror("IDENTIFICADOR NAO EXISTE NO ESCOPO!");
                 exit(0);
             }

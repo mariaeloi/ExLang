@@ -975,7 +975,7 @@ YY_RULE_SETUP
 case 43:
 YY_RULE_SETUP
 #line 56 ".\\lex.l"
-{yylval.sValue = strdup(yytext); printf("ID: %s\n", yytext); return(ID);}
+{yylval.sValue = strdup(yytext); return(ID);}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP

@@ -74,7 +74,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "util/scope_stack.c"
 #include "util/symbol_table.c"
 
 int yylex(void);
@@ -97,7 +96,7 @@ struct metaDataPaF {
 
 
 /* Line 189 of yacc.c  */
-#line 101 "lex.tab.c"
+#line 100 "lex.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -176,7 +175,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 28 ".\\lex.y"
+#line 27 ".\\lex.y"
 
 	int    iValue; 	/* integer value */
 	char   cValue; 	/* char value */
@@ -188,7 +187,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 192 "lex.tab.c"
+#line 191 "lex.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -200,7 +199,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 204 "lex.tab.c"
+#line 203 "lex.tab.c"
 
 #ifdef short
 # undef short
@@ -502,11 +501,11 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    56,    56,    56,    59,    60,    61,    62,    65,    66,
-      70,    70,    70,    77,    77,    80,    82,    83,    86,    87,
-      88,    91,    98,    99,   102,   111,   112,   114,   120,   121,
-     122,   125,   126,   129,   132,   135,   136,   137,   140,   141,
-     142,   143,   144,   145,   148,   149,   153,   163
+       0,    55,    55,    55,    58,    59,    60,    61,    64,    65,
+      69,    69,    69,    76,    76,    79,    81,    82,    85,    86,
+      87,    90,    97,    98,   101,   110,   111,   113,   119,   120,
+     121,   124,   125,   128,   131,   134,   135,   136,   139,   140,
+     141,   142,   143,   144,   147,   148,   152,   160
 };
 #endif
 
@@ -1467,73 +1466,73 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 56 ".\\lex.y"
-    {push_scope("0");;}
+#line 55 ".\\lex.y"
+    {push_stack(&SCOPE_STACK, "0");;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 56 ".\\lex.y"
+#line 55 ".\\lex.y"
     {;}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 59 ".\\lex.y"
+#line 58 ".\\lex.y"
     {;}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 60 ".\\lex.y"
+#line 59 ".\\lex.y"
     {;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 61 ".\\lex.y"
+#line 60 ".\\lex.y"
     {;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 62 ".\\lex.y"
+#line 61 ".\\lex.y"
     {;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 65 ".\\lex.y"
+#line 64 ".\\lex.y"
     {;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 66 ".\\lex.y"
+#line 65 ".\\lex.y"
     {;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 70 ".\\lex.y"
-    {push_scope((yyvsp[(2) - (2)].sValue));;}
+#line 69 ".\\lex.y"
+    {push_stack(&SCOPE_STACK, (yyvsp[(2) - (2)].sValue));;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 70 ".\\lex.y"
+#line 69 ".\\lex.y"
     {
     char var_scope[1];
-    sprintf(var_scope, "%s.%s", top_scope(), (yyvsp[(5) - (5)].metPaFValue)->id);
+    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), (yyvsp[(5) - (5)].metPaFValue)->id);
     insert_symbol(var_scope, (yyvsp[(5) - (5)].metPaFValue)->type);
 ;}
     break;
@@ -1541,73 +1540,73 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 74 ".\\lex.y"
-    {pop_scope();;}
+#line 73 ".\\lex.y"
+    {pop_stack(&SCOPE_STACK);;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 77 ".\\lex.y"
-    {push_scope("main");;}
+#line 76 ".\\lex.y"
+    {push_stack(&SCOPE_STACK, "main");;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 77 ".\\lex.y"
-    {pop_scope();;}
+#line 76 ".\\lex.y"
+    {pop_stack(&SCOPE_STACK);;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 80 ".\\lex.y"
+#line 79 ".\\lex.y"
     {;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 82 ".\\lex.y"
+#line 81 ".\\lex.y"
     {;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 83 ".\\lex.y"
+#line 82 ".\\lex.y"
     {;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 86 ".\\lex.y"
+#line 85 ".\\lex.y"
     {;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 87 ".\\lex.y"
+#line 86 ".\\lex.y"
     {;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 88 ".\\lex.y"
+#line 87 ".\\lex.y"
     {;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 91 ".\\lex.y"
+#line 90 ".\\lex.y"
     {
-            char var_scope[1];
-            sprintf(var_scope, "%s.%s", top_scope(), (yyvsp[(2) - (2)].sValue));
+            char var_scope[MAXSIZE_STRING];
+            sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), (yyvsp[(2) - (2)].sValue));
             insert_symbol(var_scope, (yyvsp[(1) - (2)].metValue)->type); 
         ;}
     break;
@@ -1615,21 +1614,21 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 98 ".\\lex.y"
+#line 97 ".\\lex.y"
     {(yyval.metPaFValue) = (yyvsp[(1) - (1)].metPaFValue);;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 99 ".\\lex.y"
+#line 98 ".\\lex.y"
     {;}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 102 ".\\lex.y"
+#line 101 ".\\lex.y"
     {
     struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
     metadata->id = (yyvsp[(2) - (2)].sValue);
@@ -1642,21 +1641,21 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 111 ".\\lex.y"
+#line 110 ".\\lex.y"
     {;}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 112 ".\\lex.y"
+#line 111 ".\\lex.y"
     {;}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 114 ".\\lex.y"
+#line 113 ".\\lex.y"
     { 
         struct metaData* metadata = (struct metaData*) malloc(sizeof(struct metaData));
         metadata->type = "number";
@@ -1668,138 +1667,136 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 120 ".\\lex.y"
+#line 119 ".\\lex.y"
     {;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 121 ".\\lex.y"
+#line 120 ".\\lex.y"
     {;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 122 ".\\lex.y"
+#line 121 ".\\lex.y"
     {;}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 125 ".\\lex.y"
+#line 124 ".\\lex.y"
     { (yyval.sValue) = (yyvsp[(1) - (1)].sValue); ;}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 126 ".\\lex.y"
+#line 125 ".\\lex.y"
     { (yyval.sValue) = (yyvsp[(3) - (3)].sValue); ;}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 129 ".\\lex.y"
+#line 128 ".\\lex.y"
     {;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 132 ".\\lex.y"
+#line 131 ".\\lex.y"
     {;}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 135 ".\\lex.y"
+#line 134 ".\\lex.y"
     {;}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 136 ".\\lex.y"
+#line 135 ".\\lex.y"
     {;}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 137 ".\\lex.y"
+#line 136 ".\\lex.y"
     {;}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 140 ".\\lex.y"
+#line 139 ".\\lex.y"
     {;}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 141 ".\\lex.y"
+#line 140 ".\\lex.y"
     {;}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 142 ".\\lex.y"
+#line 141 ".\\lex.y"
     {;}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 143 ".\\lex.y"
+#line 142 ".\\lex.y"
     {;}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 144 ".\\lex.y"
+#line 143 ".\\lex.y"
     {;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 145 ".\\lex.y"
+#line 144 ".\\lex.y"
     {;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 148 ".\\lex.y"
+#line 147 ".\\lex.y"
     {;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 149 ".\\lex.y"
+#line 148 ".\\lex.y"
     {;}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 153 ".\\lex.y"
+#line 152 ".\\lex.y"
     {
-            char var_scope[1];
-            sprintf(var_scope, "%s.%s", top_scope(), (yyvsp[(1) - (1)].sValue));
-            if(!search(var_scope)){
-                printf("->> %s <<-", var_scope);
+            if(!search((yyvsp[(1) - (1)].sValue))){
+                printf("->> %s <<-", (yyvsp[(1) - (1)].sValue));
                 yyerror("IDENTIFICADOR NAO EXISTE NO ESCOPO!");
                 exit(0);
             }
@@ -1810,14 +1807,14 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 163 ".\\lex.y"
+#line 160 ".\\lex.y"
     {;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1821 "lex.tab.c"
+#line 1818 "lex.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2029,7 +2026,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 166 ".\\lex.y"
+#line 163 ".\\lex.y"
  /* Fim da segunda seção */
 
 int main (void) {
