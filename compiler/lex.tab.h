@@ -74,13 +74,15 @@
      GT = 290,
      LT = 291,
      RETURN = 292,
-     L_K = 293,
-     R_K = 294,
-     L_P = 295,
-     R_P = 296,
-     COLON = 297,
-     SEMI = 298,
-     COMMA = 299
+     EXL = 293,
+     L_K = 294,
+     R_K = 295,
+     L_P = 296,
+     R_P = 297,
+     COLON = 298,
+     SEMI = 299,
+     COMMA = 300,
+     PRINT = 301
    };
 #endif
 
@@ -103,7 +105,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 107 "lex.tab.h"
+#line 109 "lex.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

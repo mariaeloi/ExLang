@@ -42,8 +42,9 @@ struct metaDataPaF {
 %token IF ELSIF ELSE DO WHILE FOR 
 %token ASSIGN PLUS MINUS DIVIDE MULTY PERCENT EXP
 %token NE EQ GE LE GT LT
-%token RETURN 
+%token RETURN EXL 
 %token L_K R_K L_P R_P COLON SEMI COMMA
+%token PRINT
 
 %type<sValue> idlist
 %type<metValue> type
@@ -52,7 +53,7 @@ struct metaDataPaF {
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
 
-prog : {push_stack(&SCOPE_STACK, "0");} body				{}
+prog : EXL ID {printf("prog name: %s\n", $2); push_stack(&SCOPE_STACK, "0");} body				{}
     ;
 
 body : func_main {}
@@ -85,6 +86,7 @@ stmts : stmt SEMI    				            {}
 stmt :  return 								{}
     |   decl								{}
     |   assign								{}
+    |   print                               {}
     ;
 
 decl : 	type idlist {
@@ -158,6 +160,12 @@ term :  ID {
             
     }
 	| V_NUMBER 							   {}
+    ;
+
+print_param : expr                                {}
+    ;
+
+print : PRINT L_P print_param R_P SEMI      {}
     ;
 
 %% /* Fim da segunda seção */

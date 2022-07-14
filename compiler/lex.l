@@ -49,6 +49,8 @@
 "void"						{return(VOID);}
 "const"						{return(CONST);}
 "function"					{return(FUNCTION);}
+"print"						{return(PRINT);}
+"ExL"						{return(EXL);}
 true|false               	{return(V_BOOLEAN);}
 ['].[']                  	{return(V_CHAR);}
 [+-]?[0-9]+(\.[0-9]+)?		{return(V_NUMBER);}
