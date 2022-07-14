@@ -10,31 +10,50 @@ int yylex(void);
 int yyerror(char *s);
 extern int yylineno;
 extern char * yytext;
+
+
+struct metaData {
+    char* type;
+    char* type_c;
+};
+
+struct metaDataPaF {
+    char* id;
+    char* type;
+    char* type_c;
+};
+
 %}
 
 %union {
 	int    iValue; 	/* integer value */
 	char   cValue; 	/* char value */
 	char * sValue;  /* string value */
+
+    struct metaData* metValue;
+    struct metaDataPaF* metPaFValue;
 };
 
-%token<sValue> ID V_STRING V_BOOLEAN NUMBER STRING CHAR BOOLEAN
+%token<sValue> ID V_STRING V_BOOLEAN 
 %token<cValue> V_CHAR
 %token<iValue> V_NUMBER
 %token CONST VOID FUNCTION MAIN
 %token AND OR
+%token NUMBER STRING CHAR BOOLEAN
 %token IF ELSIF ELSE DO WHILE FOR 
-%token ASSIGN PLUS MINUS DIVIDE MULTY PERCENT
+%token ASSIGN PLUS MINUS DIVIDE MULTY PERCENT EXP
 %token NE EQ GE LE GT LT
 %token RETURN 
 %token L_K R_K L_P R_P COLON SEMI COMMA
 
-%type<sValue> type idlist
+%type<sValue> idlist
+%type<metValue> type
+%type<metPaFValue> param params
 %start prog
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
 
-prog : {push_scope();} body				{}
+prog : {push_scope("0");} body				{}
     ;
 
 body : func_main {}
@@ -47,17 +66,18 @@ decls : decl SEMI                              {}
     |	decl SEMI decls					        {}
     ;
 
-params : param                                {}
-    |	param COMMA params			        {}
+
+funcs : FUNCTION ID {push_scope($2);} L_P params {
+    char var_scope[1];
+    sprintf(var_scope, "%s.%s", top_scope(), $5->id);
+    insert_symbol(var_scope, $5->type);
+} R_P COLON result_type L_K stmts R_K  {pop_scope();}
     ;
 
-funcs : FUNCTION ID L_P params R_P COLON type L_K stmts R_K  {}
+func_main : FUNCTION MAIN {push_scope("main");} L_P params R_P COLON type L_K stmts R_K {pop_scope();}
     ;
 
-func_main : FUNCTION MAIN {push_scope();} L_P params R_P COLON type L_K stmts R_K {pop_scope();}
-    ;
-
-func_call : ID {push_scope();} L_P termlist R_P               {pop_scope();}
+func_call : ID L_P termlist R_P               {}
 
 stmts : stmt SEMI    				            {}
 	|	stmt SEMI stmts		    		    {}
@@ -69,16 +89,37 @@ stmt :  return 								{}
     ;
 
 decl : 	type idlist {
-            char var_scope[0];
-            sprintf(var_scope, "%d.%s", top_scope(), $2);
-            insert_symbol(var_scope, $1); 
+            char var_scope[1];
+            sprintf(var_scope, "%s.%s", top_scope(), $2);
+            insert_symbol(var_scope, $1->type); 
         } 
     ;
 
-param : type ID                            {} 
+params : param                                {$$ = $1;}
+    |	param COMMA params			        {}
     ;
 
-type : NUMBER 								{ $$ = $1; }
+param : type ID {
+    struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+    metadata->id = $2;
+    metadata->type = $1->type;
+    metadata->type_c = $1->type_c;
+    $$ = metadata;
+} 
+    ;
+
+result_type : type {}
+    | VOID {}
+
+type : NUMBER { 
+        struct metaData* metadata = (struct metaData*) malloc(sizeof(struct metaData));
+        metadata->type = "number";
+        metadata->type_c = "double";
+        $$ = metadata;
+        }
+    | STRING                            {}
+    | CHAR                              {}
+    | BOOLEAN                           {}
     ;
 
 idlist : ID                                 { $$ = $1; }
@@ -92,12 +133,16 @@ assign : ID ASSIGN expr                     {}
     ;
 
 expr :   term                               {}
-    | ID op ID                              {}
+    | term op term                              {}
     | func_call                             {}
     ;
 
 op :     PLUS                                   {}
     |    MINUS                                  {}
+    |    DIVIDE                                 {}
+    |    MULTY                                  {}
+    |    PERCENT                                {}
+    |    EXP                                    {}
     ;
 
 termlist : term                                {}
@@ -105,8 +150,17 @@ termlist : term                                {}
     ;
 
 
-term :  ID                                 {}
-	| V_NUMBER 								{}
+term :  ID {
+            char var_scope[1];
+            sprintf(var_scope, "%s.%s", top_scope(), $1);
+            if(!search(var_scope)){
+                printf("->> %s <<-", var_scope);
+                yyerror("IDENTIFICADOR NAO EXISTE NO ESCOPO!");
+                exit(0);
+            }
+            
+    }
+	| V_NUMBER 							   {}
     ;
 
 %% /* Fim da segunda seção */

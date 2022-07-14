@@ -35,6 +35,7 @@ void insert_symbol(char* name, char* type) {
     if(symbol_head == NULL) {
         symbol_head = new_symbol(name, type);
     } else {
+        printf("--------------------------------------------%s", symbol_head->name);
         symbol* symbol_curr = symbol_head;
 
         bool stop = false;
@@ -55,4 +56,20 @@ void insert_symbol(char* name, char* type) {
             }
         }
     }
+}
+
+bool search(char* name){
+    symbol* symbol_curr = symbol_head;
+    
+    bool stop = false;
+    while(!stop){
+        if(strcmp(symbol_curr->name, name) == 0){
+            return true;
+        }
+        if(symbol_curr->next == NULL){
+            break;
+        }
+        symbol_curr = symbol_curr->next;
+    }
+    return false;
 }

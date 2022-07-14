@@ -2,12 +2,8 @@ Terminals unused in grammar
 
    V_STRING
    V_BOOLEAN
-   STRING
-   CHAR
-   BOOLEAN
    V_CHAR
    CONST
-   VOID
    AND
    OR
    IF
@@ -16,9 +12,6 @@ Terminals unused in grammar
    DO
    WHILE
    FOR
-   DIVIDE
-   MULTY
-   PERCENT
    NE
    EQ
    GE
@@ -43,148 +36,165 @@ Grammar
     7 decls: decl SEMI
     8      | decl SEMI decls
 
-    9 params: param
-   10       | param COMMA params
+    9 $@2: /* empty */
 
-   11 funcs: FUNCTION ID L_P params R_P COLON type L_K stmts R_K
+   10 $@3: /* empty */
 
-   12 $@2: /* empty */
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P COLON result_type L_K stmts R_K
 
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P COLON type L_K stmts R_K
+   12 $@4: /* empty */
 
-   14 $@3: /* empty */
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P COLON type L_K stmts R_K
 
-   15 func_call: ID $@3 L_P termlist R_P
+   14 func_call: ID L_P termlist R_P
 
-   16 stmts: stmt SEMI
-   17      | stmt SEMI stmts
+   15 stmts: stmt SEMI
+   16      | stmt SEMI stmts
 
-   18 stmt: return
-   19     | decl
-   20     | assign
+   17 stmt: return
+   18     | decl
+   19     | assign
 
-   21 decl: type idlist
+   20 decl: type idlist
 
-   22 param: type ID
+   21 params: param
+   22       | param COMMA params
 
-   23 type: NUMBER
+   23 param: type ID
 
-   24 idlist: ID
-   25       | ID COMMA idlist
+   24 result_type: type
+   25            | VOID
 
-   26 return: RETURN expr
+   26 type: NUMBER
+   27     | STRING
+   28     | CHAR
+   29     | BOOLEAN
 
-   27 assign: ID ASSIGN expr
+   30 idlist: ID
+   31       | ID COMMA idlist
 
-   28 expr: term
-   29     | ID op ID
-   30     | func_call
+   32 return: RETURN expr
 
-   31 op: PLUS
-   32   | MINUS
+   33 assign: ID ASSIGN expr
 
-   33 termlist: term
-   34         | term COMMA termlist
+   34 expr: term
+   35     | term op term
+   36     | func_call
 
-   35 term: ID
-   36     | V_NUMBER
+   37 op: PLUS
+   38   | MINUS
+   39   | DIVIDE
+   40   | MULTY
+   41   | PERCENT
+   42   | EXP
+
+   43 termlist: term
+   44         | term COMMA termlist
+
+   45 term: ID
+   46     | V_NUMBER
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-ID (258) 11 15 22 24 25 27 29 35
+ID (258) 11 14 23 30 31 33 45
 V_STRING (259)
 V_BOOLEAN (260)
-NUMBER (261) 23
-STRING (262)
-CHAR (263)
-BOOLEAN (264)
-V_CHAR (265)
-V_NUMBER (266) 36
-CONST (267)
-VOID (268)
-FUNCTION (269) 11 13
-MAIN (270) 13
-AND (271)
-OR (272)
+V_CHAR (261)
+V_NUMBER (262) 46
+CONST (263)
+VOID (264) 25
+FUNCTION (265) 11 13
+MAIN (266) 13
+AND (267)
+OR (268)
+NUMBER (269) 26
+STRING (270) 27
+CHAR (271) 28
+BOOLEAN (272) 29
 IF (273)
 ELSIF (274)
 ELSE (275)
 DO (276)
 WHILE (277)
 FOR (278)
-ASSIGN (279) 27
-PLUS (280) 31
-MINUS (281) 32
-DIVIDE (282)
-MULTY (283)
-PERCENT (284)
-NE (285)
-EQ (286)
-GE (287)
-LE (288)
-GT (289)
-LT (290)
-RETURN (291) 26
-L_K (292) 11 13
-R_K (293) 11 13
-L_P (294) 11 13 15
-R_P (295) 11 13 15
-COLON (296) 11 13
-SEMI (297) 7 8 16 17
-COMMA (298) 10 25 34
+ASSIGN (279) 33
+PLUS (280) 37
+MINUS (281) 38
+DIVIDE (282) 39
+MULTY (283) 40
+PERCENT (284) 41
+EXP (285) 42
+NE (286)
+EQ (287)
+GE (288)
+LE (289)
+GT (290)
+LT (291)
+RETURN (292) 32
+L_K (293) 11 13
+R_K (294) 11 13
+L_P (295) 11 13 14
+R_P (296) 11 13 14
+COLON (297) 11 13
+SEMI (298) 7 8 15 16
+COMMA (299) 22 31 44
 
 
 Nonterminals, with rules where they appear
 
-$accept (44)
+$accept (45)
     on left: 0
-prog (45)
+prog (46)
     on left: 2, on right: 0
-$@1 (46)
+$@1 (47)
     on left: 1, on right: 2
-body (47)
+body (48)
     on left: 3 4 5 6, on right: 2
-decls (48)
+decls (49)
     on left: 7 8, on right: 4 6 8
-params (49)
-    on left: 9 10, on right: 10 11 13
 funcs (50)
     on left: 11, on right: 5 6
-func_main (51)
+$@2 (51)
+    on left: 9, on right: 11
+$@3 (52)
+    on left: 10, on right: 11
+func_main (53)
     on left: 13, on right: 3 4 5 6
-$@2 (52)
+$@4 (54)
     on left: 12, on right: 13
-func_call (53)
-    on left: 15, on right: 30
-$@3 (54)
-    on left: 14, on right: 15
-stmts (55)
-    on left: 16 17, on right: 11 13 17
-stmt (56)
-    on left: 18 19 20, on right: 16 17
-decl (57)
-    on left: 21, on right: 7 8 19
-param (58)
-    on left: 22, on right: 9 10
-type (59)
-    on left: 23, on right: 11 13 21 22
-idlist (60)
-    on left: 24 25, on right: 21 25
-return (61)
-    on left: 26, on right: 18
-assign (62)
-    on left: 27, on right: 20
-expr (63)
-    on left: 28 29 30, on right: 26 27
-op (64)
-    on left: 31 32, on right: 29
-termlist (65)
-    on left: 33 34, on right: 15 34
-term (66)
-    on left: 35 36, on right: 28 33 34
+func_call (55)
+    on left: 14, on right: 36
+stmts (56)
+    on left: 15 16, on right: 11 13 16
+stmt (57)
+    on left: 17 18 19, on right: 15 16
+decl (58)
+    on left: 20, on right: 7 8 18
+params (59)
+    on left: 21 22, on right: 11 13 22
+param (60)
+    on left: 23, on right: 21 22
+result_type (61)
+    on left: 24 25, on right: 11
+type (62)
+    on left: 26 27 28 29, on right: 13 20 23 24
+idlist (63)
+    on left: 30 31, on right: 20 31
+return (64)
+    on left: 32, on right: 17
+assign (65)
+    on left: 33, on right: 19
+expr (66)
+    on left: 34 35 36, on right: 32 33
+op (67)
+    on left: 37 38 39 40 41 42, on right: 35
+termlist (68)
+    on left: 43 44, on right: 14 44
+term (69)
+    on left: 45 46, on right: 34 35 43 44
 
 
 state 0
@@ -208,15 +218,18 @@ state 2
 
     2 prog: $@1 . body
 
-    NUMBER    shift, and go to state 4
-    FUNCTION  shift, and go to state 5
+    FUNCTION  shift, and go to state 4
+    NUMBER    shift, and go to state 5
+    STRING    shift, and go to state 6
+    CHAR      shift, and go to state 7
+    BOOLEAN   shift, and go to state 8
 
-    body       go to state 6
-    decls      go to state 7
-    funcs      go to state 8
-    func_main  go to state 9
-    decl       go to state 10
-    type       go to state 11
+    body       go to state 9
+    decls      go to state 10
+    funcs      go to state 11
+    func_main  go to state 12
+    decl       go to state 13
+    type       go to state 14
 
 
 state 3
@@ -228,596 +241,706 @@ state 3
 
 state 4
 
-   23 type: NUMBER .
+   11 funcs: FUNCTION . ID $@2 L_P params $@3 R_P COLON result_type L_K stmts R_K
+   13 func_main: FUNCTION . MAIN $@4 L_P params R_P COLON type L_K stmts R_K
 
-    $default  reduce using rule 23 (type)
+    ID    shift, and go to state 15
+    MAIN  shift, and go to state 16
 
 
 state 5
 
-   11 funcs: FUNCTION . ID L_P params R_P COLON type L_K stmts R_K
-   13 func_main: FUNCTION . MAIN $@2 L_P params R_P COLON type L_K stmts R_K
+   26 type: NUMBER .
 
-    ID    shift, and go to state 12
-    MAIN  shift, and go to state 13
+    $default  reduce using rule 26 (type)
 
 
 state 6
+
+   27 type: STRING .
+
+    $default  reduce using rule 27 (type)
+
+
+state 7
+
+   28 type: CHAR .
+
+    $default  reduce using rule 28 (type)
+
+
+state 8
+
+   29 type: BOOLEAN .
+
+    $default  reduce using rule 29 (type)
+
+
+state 9
 
     2 prog: $@1 body .
 
     $default  reduce using rule 2 (prog)
 
 
-state 7
+state 10
 
     4 body: decls . func_main
     6     | decls . funcs func_main
 
-    FUNCTION  shift, and go to state 5
+    FUNCTION  shift, and go to state 4
 
-    funcs      go to state 14
-    func_main  go to state 15
+    funcs      go to state 17
+    func_main  go to state 18
 
 
-state 8
+state 11
 
     5 body: funcs . func_main
 
-    FUNCTION  shift, and go to state 16
+    FUNCTION  shift, and go to state 19
 
-    func_main  go to state 17
+    func_main  go to state 20
 
 
-state 9
+state 12
 
     3 body: func_main .
 
     $default  reduce using rule 3 (body)
 
 
-state 10
+state 13
 
     7 decls: decl . SEMI
     8      | decl . SEMI decls
 
-    SEMI  shift, and go to state 18
-
-
-state 11
-
-   21 decl: type . idlist
-
-    ID  shift, and go to state 19
-
-    idlist  go to state 20
-
-
-state 12
-
-   11 funcs: FUNCTION ID . L_P params R_P COLON type L_K stmts R_K
-
-    L_P  shift, and go to state 21
-
-
-state 13
-
-   13 func_main: FUNCTION MAIN . $@2 L_P params R_P COLON type L_K stmts R_K
-
-    $default  reduce using rule 12 ($@2)
-
-    $@2  go to state 22
+    SEMI  shift, and go to state 21
 
 
 state 14
 
-    6 body: decls funcs . func_main
+   20 decl: type . idlist
 
-    FUNCTION  shift, and go to state 16
+    ID  shift, and go to state 22
 
-    func_main  go to state 23
+    idlist  go to state 23
 
 
 state 15
+
+   11 funcs: FUNCTION ID . $@2 L_P params $@3 R_P COLON result_type L_K stmts R_K
+
+    $default  reduce using rule 9 ($@2)
+
+    $@2  go to state 24
+
+
+state 16
+
+   13 func_main: FUNCTION MAIN . $@4 L_P params R_P COLON type L_K stmts R_K
+
+    $default  reduce using rule 12 ($@4)
+
+    $@4  go to state 25
+
+
+state 17
+
+    6 body: decls funcs . func_main
+
+    FUNCTION  shift, and go to state 19
+
+    func_main  go to state 26
+
+
+state 18
 
     4 body: decls func_main .
 
     $default  reduce using rule 4 (body)
 
 
-state 16
+state 19
 
-   13 func_main: FUNCTION . MAIN $@2 L_P params R_P COLON type L_K stmts R_K
+   13 func_main: FUNCTION . MAIN $@4 L_P params R_P COLON type L_K stmts R_K
 
-    MAIN  shift, and go to state 13
+    MAIN  shift, and go to state 16
 
 
-state 17
+state 20
 
     5 body: funcs func_main .
 
     $default  reduce using rule 5 (body)
 
 
-state 18
+state 21
 
     7 decls: decl SEMI .
     8      | decl SEMI . decls
 
-    NUMBER  shift, and go to state 4
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
 
     $default  reduce using rule 7 (decls)
 
-    decls  go to state 24
-    decl   go to state 10
-    type   go to state 11
-
-
-state 19
-
-   24 idlist: ID .
-   25       | ID . COMMA idlist
-
-    COMMA  shift, and go to state 25
-
-    $default  reduce using rule 24 (idlist)
-
-
-state 20
-
-   21 decl: type idlist .
-
-    $default  reduce using rule 21 (decl)
-
-
-state 21
-
-   11 funcs: FUNCTION ID L_P . params R_P COLON type L_K stmts R_K
-
-    NUMBER  shift, and go to state 4
-
-    params  go to state 26
-    param   go to state 27
-    type    go to state 28
+    decls  go to state 27
+    decl   go to state 13
+    type   go to state 14
 
 
 state 22
 
-   13 func_main: FUNCTION MAIN $@2 . L_P params R_P COLON type L_K stmts R_K
+   30 idlist: ID .
+   31       | ID . COMMA idlist
+
+    COMMA  shift, and go to state 28
+
+    $default  reduce using rule 30 (idlist)
+
+
+state 23
+
+   20 decl: type idlist .
+
+    $default  reduce using rule 20 (decl)
+
+
+state 24
+
+   11 funcs: FUNCTION ID $@2 . L_P params $@3 R_P COLON result_type L_K stmts R_K
 
     L_P  shift, and go to state 29
 
 
-state 23
+state 25
+
+   13 func_main: FUNCTION MAIN $@4 . L_P params R_P COLON type L_K stmts R_K
+
+    L_P  shift, and go to state 30
+
+
+state 26
 
     6 body: decls funcs func_main .
 
     $default  reduce using rule 6 (body)
 
 
-state 24
+state 27
 
     8 decls: decl SEMI decls .
 
     $default  reduce using rule 8 (decls)
 
 
-state 25
-
-   25 idlist: ID COMMA . idlist
-
-    ID  shift, and go to state 19
-
-    idlist  go to state 30
-
-
-state 26
-
-   11 funcs: FUNCTION ID L_P params . R_P COLON type L_K stmts R_K
-
-    R_P  shift, and go to state 31
-
-
-state 27
-
-    9 params: param .
-   10       | param . COMMA params
-
-    COMMA  shift, and go to state 32
-
-    $default  reduce using rule 9 (params)
-
-
 state 28
 
-   22 param: type . ID
+   31 idlist: ID COMMA . idlist
 
-    ID  shift, and go to state 33
+    ID  shift, and go to state 22
+
+    idlist  go to state 31
 
 
 state 29
 
-   13 func_main: FUNCTION MAIN $@2 L_P . params R_P COLON type L_K stmts R_K
+   11 funcs: FUNCTION ID $@2 L_P . params $@3 R_P COLON result_type L_K stmts R_K
 
-    NUMBER  shift, and go to state 4
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
 
-    params  go to state 34
-    param   go to state 27
-    type    go to state 28
+    params  go to state 32
+    param   go to state 33
+    type    go to state 34
 
 
 state 30
 
-   25 idlist: ID COMMA idlist .
+   13 func_main: FUNCTION MAIN $@4 L_P . params R_P COLON type L_K stmts R_K
 
-    $default  reduce using rule 25 (idlist)
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
+
+    params  go to state 35
+    param   go to state 33
+    type    go to state 34
 
 
 state 31
 
-   11 funcs: FUNCTION ID L_P params R_P . COLON type L_K stmts R_K
+   31 idlist: ID COMMA idlist .
 
-    COLON  shift, and go to state 35
+    $default  reduce using rule 31 (idlist)
 
 
 state 32
 
-   10 params: param COMMA . params
+   11 funcs: FUNCTION ID $@2 L_P params . $@3 R_P COLON result_type L_K stmts R_K
 
-    NUMBER  shift, and go to state 4
+    $default  reduce using rule 10 ($@3)
 
-    params  go to state 36
-    param   go to state 27
-    type    go to state 28
+    $@3  go to state 36
 
 
 state 33
 
-   22 param: type ID .
+   21 params: param .
+   22       | param . COMMA params
 
-    $default  reduce using rule 22 (param)
+    COMMA  shift, and go to state 37
+
+    $default  reduce using rule 21 (params)
 
 
 state 34
 
-   13 func_main: FUNCTION MAIN $@2 L_P params . R_P COLON type L_K stmts R_K
+   23 param: type . ID
 
-    R_P  shift, and go to state 37
+    ID  shift, and go to state 38
 
 
 state 35
 
-   11 funcs: FUNCTION ID L_P params R_P COLON . type L_K stmts R_K
+   13 func_main: FUNCTION MAIN $@4 L_P params . R_P COLON type L_K stmts R_K
 
-    NUMBER  shift, and go to state 4
-
-    type  go to state 38
+    R_P  shift, and go to state 39
 
 
 state 36
 
-   10 params: param COMMA params .
+   11 funcs: FUNCTION ID $@2 L_P params $@3 . R_P COLON result_type L_K stmts R_K
 
-    $default  reduce using rule 10 (params)
+    R_P  shift, and go to state 40
 
 
 state 37
 
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P . COLON type L_K stmts R_K
+   22 params: param COMMA . params
 
-    COLON  shift, and go to state 39
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
+
+    params  go to state 41
+    param   go to state 33
+    type    go to state 34
 
 
 state 38
 
-   11 funcs: FUNCTION ID L_P params R_P COLON type . L_K stmts R_K
+   23 param: type ID .
 
-    L_K  shift, and go to state 40
+    $default  reduce using rule 23 (param)
 
 
 state 39
 
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P COLON . type L_K stmts R_K
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P . COLON type L_K stmts R_K
 
-    NUMBER  shift, and go to state 4
-
-    type  go to state 41
+    COLON  shift, and go to state 42
 
 
 state 40
 
-   11 funcs: FUNCTION ID L_P params R_P COLON type L_K . stmts R_K
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P . COLON result_type L_K stmts R_K
 
-    ID      shift, and go to state 42
-    NUMBER  shift, and go to state 4
-    RETURN  shift, and go to state 43
-
-    stmts   go to state 44
-    stmt    go to state 45
-    decl    go to state 46
-    type    go to state 11
-    return  go to state 47
-    assign  go to state 48
+    COLON  shift, and go to state 43
 
 
 state 41
 
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P COLON type . L_K stmts R_K
+   22 params: param COMMA params .
 
-    L_K  shift, and go to state 49
+    $default  reduce using rule 22 (params)
 
 
 state 42
 
-   27 assign: ID . ASSIGN expr
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P COLON . type L_K stmts R_K
 
-    ASSIGN  shift, and go to state 50
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
+
+    type  go to state 44
 
 
 state 43
 
-   26 return: RETURN . expr
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P COLON . result_type L_K stmts R_K
 
-    ID        shift, and go to state 51
-    V_NUMBER  shift, and go to state 52
+    VOID     shift, and go to state 45
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
 
-    func_call  go to state 53
-    expr       go to state 54
-    term       go to state 55
+    result_type  go to state 46
+    type         go to state 47
 
 
 state 44
 
-   11 funcs: FUNCTION ID L_P params R_P COLON type L_K stmts . R_K
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P COLON type . L_K stmts R_K
 
-    R_K  shift, and go to state 56
+    L_K  shift, and go to state 48
 
 
 state 45
 
-   16 stmts: stmt . SEMI
-   17      | stmt . SEMI stmts
+   25 result_type: VOID .
 
-    SEMI  shift, and go to state 57
+    $default  reduce using rule 25 (result_type)
 
 
 state 46
 
-   19 stmt: decl .
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P COLON result_type . L_K stmts R_K
 
-    $default  reduce using rule 19 (stmt)
+    L_K  shift, and go to state 49
 
 
 state 47
 
-   18 stmt: return .
+   24 result_type: type .
 
-    $default  reduce using rule 18 (stmt)
+    $default  reduce using rule 24 (result_type)
 
 
 state 48
 
-   20 stmt: assign .
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P COLON type L_K . stmts R_K
 
-    $default  reduce using rule 20 (stmt)
+    ID       shift, and go to state 50
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
+    RETURN   shift, and go to state 51
+
+    stmts   go to state 52
+    stmt    go to state 53
+    decl    go to state 54
+    type    go to state 14
+    return  go to state 55
+    assign  go to state 56
 
 
 state 49
 
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P COLON type L_K . stmts R_K
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P COLON result_type L_K . stmts R_K
 
-    ID      shift, and go to state 42
-    NUMBER  shift, and go to state 4
-    RETURN  shift, and go to state 43
+    ID       shift, and go to state 50
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
+    RETURN   shift, and go to state 51
 
-    stmts   go to state 58
-    stmt    go to state 45
-    decl    go to state 46
-    type    go to state 11
-    return  go to state 47
-    assign  go to state 48
+    stmts   go to state 57
+    stmt    go to state 53
+    decl    go to state 54
+    type    go to state 14
+    return  go to state 55
+    assign  go to state 56
 
 
 state 50
 
-   27 assign: ID ASSIGN . expr
+   33 assign: ID . ASSIGN expr
 
-    ID        shift, and go to state 51
-    V_NUMBER  shift, and go to state 52
-
-    func_call  go to state 53
-    expr       go to state 59
-    term       go to state 55
+    ASSIGN  shift, and go to state 58
 
 
 state 51
 
-   15 func_call: ID . $@3 L_P termlist R_P
-   29 expr: ID . op ID
-   35 term: ID .
+   32 return: RETURN . expr
 
-    PLUS   shift, and go to state 60
-    MINUS  shift, and go to state 61
+    ID        shift, and go to state 59
+    V_NUMBER  shift, and go to state 60
 
-    SEMI      reduce using rule 35 (term)
-    $default  reduce using rule 14 ($@3)
-
-    $@3  go to state 62
-    op   go to state 63
+    func_call  go to state 61
+    expr       go to state 62
+    term       go to state 63
 
 
 state 52
 
-   36 term: V_NUMBER .
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P COLON type L_K stmts . R_K
 
-    $default  reduce using rule 36 (term)
+    R_K  shift, and go to state 64
 
 
 state 53
 
-   30 expr: func_call .
+   15 stmts: stmt . SEMI
+   16      | stmt . SEMI stmts
 
-    $default  reduce using rule 30 (expr)
+    SEMI  shift, and go to state 65
 
 
 state 54
 
-   26 return: RETURN expr .
+   18 stmt: decl .
 
-    $default  reduce using rule 26 (return)
+    $default  reduce using rule 18 (stmt)
 
 
 state 55
 
-   28 expr: term .
+   17 stmt: return .
 
-    $default  reduce using rule 28 (expr)
+    $default  reduce using rule 17 (stmt)
 
 
 state 56
 
-   11 funcs: FUNCTION ID L_P params R_P COLON type L_K stmts R_K .
+   19 stmt: assign .
 
-    $default  reduce using rule 11 (funcs)
+    $default  reduce using rule 19 (stmt)
 
 
 state 57
 
-   16 stmts: stmt SEMI .
-   17      | stmt SEMI . stmts
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P COLON result_type L_K stmts . R_K
 
-    ID      shift, and go to state 42
-    NUMBER  shift, and go to state 4
-    RETURN  shift, and go to state 43
-
-    $default  reduce using rule 16 (stmts)
-
-    stmts   go to state 64
-    stmt    go to state 45
-    decl    go to state 46
-    type    go to state 11
-    return  go to state 47
-    assign  go to state 48
+    R_K  shift, and go to state 66
 
 
 state 58
 
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P COLON type L_K stmts . R_K
+   33 assign: ID ASSIGN . expr
 
-    R_K  shift, and go to state 65
+    ID        shift, and go to state 59
+    V_NUMBER  shift, and go to state 60
+
+    func_call  go to state 61
+    expr       go to state 67
+    term       go to state 63
 
 
 state 59
 
-   27 assign: ID ASSIGN expr .
+   14 func_call: ID . L_P termlist R_P
+   45 term: ID .
 
-    $default  reduce using rule 27 (assign)
+    L_P  shift, and go to state 68
+
+    $default  reduce using rule 45 (term)
 
 
 state 60
 
-   31 op: PLUS .
+   46 term: V_NUMBER .
 
-    $default  reduce using rule 31 (op)
+    $default  reduce using rule 46 (term)
 
 
 state 61
 
-   32 op: MINUS .
+   36 expr: func_call .
 
-    $default  reduce using rule 32 (op)
+    $default  reduce using rule 36 (expr)
 
 
 state 62
 
-   15 func_call: ID $@3 . L_P termlist R_P
+   32 return: RETURN expr .
 
-    L_P  shift, and go to state 66
+    $default  reduce using rule 32 (return)
 
 
 state 63
 
-   29 expr: ID op . ID
+   34 expr: term .
+   35     | term . op term
 
-    ID  shift, and go to state 67
+    PLUS     shift, and go to state 69
+    MINUS    shift, and go to state 70
+    DIVIDE   shift, and go to state 71
+    MULTY    shift, and go to state 72
+    PERCENT  shift, and go to state 73
+    EXP      shift, and go to state 74
+
+    $default  reduce using rule 34 (expr)
+
+    op  go to state 75
 
 
 state 64
 
-   17 stmts: stmt SEMI stmts .
-
-    $default  reduce using rule 17 (stmts)
-
-
-state 65
-
-   13 func_main: FUNCTION MAIN $@2 L_P params R_P COLON type L_K stmts R_K .
+   13 func_main: FUNCTION MAIN $@4 L_P params R_P COLON type L_K stmts R_K .
 
     $default  reduce using rule 13 (func_main)
 
 
+state 65
+
+   15 stmts: stmt SEMI .
+   16      | stmt SEMI . stmts
+
+    ID       shift, and go to state 50
+    NUMBER   shift, and go to state 5
+    STRING   shift, and go to state 6
+    CHAR     shift, and go to state 7
+    BOOLEAN  shift, and go to state 8
+    RETURN   shift, and go to state 51
+
+    $default  reduce using rule 15 (stmts)
+
+    stmts   go to state 76
+    stmt    go to state 53
+    decl    go to state 54
+    type    go to state 14
+    return  go to state 55
+    assign  go to state 56
+
+
 state 66
 
-   15 func_call: ID $@3 L_P . termlist R_P
+   11 funcs: FUNCTION ID $@2 L_P params $@3 R_P COLON result_type L_K stmts R_K .
 
-    ID        shift, and go to state 68
-    V_NUMBER  shift, and go to state 52
-
-    termlist  go to state 69
-    term      go to state 70
+    $default  reduce using rule 11 (funcs)
 
 
 state 67
 
-   29 expr: ID op ID .
+   33 assign: ID ASSIGN expr .
 
-    $default  reduce using rule 29 (expr)
+    $default  reduce using rule 33 (assign)
 
 
 state 68
 
-   35 term: ID .
+   14 func_call: ID L_P . termlist R_P
 
-    $default  reduce using rule 35 (term)
+    ID        shift, and go to state 77
+    V_NUMBER  shift, and go to state 60
+
+    termlist  go to state 78
+    term      go to state 79
 
 
 state 69
 
-   15 func_call: ID $@3 L_P termlist . R_P
+   37 op: PLUS .
 
-    R_P  shift, and go to state 71
+    $default  reduce using rule 37 (op)
 
 
 state 70
 
-   33 termlist: term .
-   34         | term . COMMA termlist
+   38 op: MINUS .
 
-    COMMA  shift, and go to state 72
-
-    $default  reduce using rule 33 (termlist)
+    $default  reduce using rule 38 (op)
 
 
 state 71
 
-   15 func_call: ID $@3 L_P termlist R_P .
+   39 op: DIVIDE .
 
-    $default  reduce using rule 15 (func_call)
+    $default  reduce using rule 39 (op)
 
 
 state 72
 
-   34 termlist: term COMMA . termlist
+   40 op: MULTY .
 
-    ID        shift, and go to state 68
-    V_NUMBER  shift, and go to state 52
-
-    termlist  go to state 73
-    term      go to state 70
+    $default  reduce using rule 40 (op)
 
 
 state 73
 
-   34 termlist: term COMMA termlist .
+   41 op: PERCENT .
 
-    $default  reduce using rule 34 (termlist)
+    $default  reduce using rule 41 (op)
+
+
+state 74
+
+   42 op: EXP .
+
+    $default  reduce using rule 42 (op)
+
+
+state 75
+
+   35 expr: term op . term
+
+    ID        shift, and go to state 77
+    V_NUMBER  shift, and go to state 60
+
+    term  go to state 80
+
+
+state 76
+
+   16 stmts: stmt SEMI stmts .
+
+    $default  reduce using rule 16 (stmts)
+
+
+state 77
+
+   45 term: ID .
+
+    $default  reduce using rule 45 (term)
+
+
+state 78
+
+   14 func_call: ID L_P termlist . R_P
+
+    R_P  shift, and go to state 81
+
+
+state 79
+
+   43 termlist: term .
+   44         | term . COMMA termlist
+
+    COMMA  shift, and go to state 82
+
+    $default  reduce using rule 43 (termlist)
+
+
+state 80
+
+   35 expr: term op term .
+
+    $default  reduce using rule 35 (expr)
+
+
+state 81
+
+   14 func_call: ID L_P termlist R_P .
+
+    $default  reduce using rule 14 (func_call)
+
+
+state 82
+
+   44 termlist: term COMMA . termlist
+
+    ID        shift, and go to state 77
+    V_NUMBER  shift, and go to state 60
+
+    termlist  go to state 83
+    term      go to state 79
+
+
+state 83
+
+   44 termlist: term COMMA termlist .
+
+    $default  reduce using rule 44 (termlist)

@@ -42,18 +42,18 @@
      ID = 258,
      V_STRING = 259,
      V_BOOLEAN = 260,
-     NUMBER = 261,
-     STRING = 262,
-     CHAR = 263,
-     BOOLEAN = 264,
-     V_CHAR = 265,
-     V_NUMBER = 266,
-     CONST = 267,
-     VOID = 268,
-     FUNCTION = 269,
-     MAIN = 270,
-     AND = 271,
-     OR = 272,
+     V_CHAR = 261,
+     V_NUMBER = 262,
+     CONST = 263,
+     VOID = 264,
+     FUNCTION = 265,
+     MAIN = 266,
+     AND = 267,
+     OR = 268,
+     NUMBER = 269,
+     STRING = 270,
+     CHAR = 271,
+     BOOLEAN = 272,
      IF = 273,
      ELSIF = 274,
      ELSE = 275,
@@ -66,20 +66,21 @@
      DIVIDE = 282,
      MULTY = 283,
      PERCENT = 284,
-     NE = 285,
-     EQ = 286,
-     GE = 287,
-     LE = 288,
-     GT = 289,
-     LT = 290,
-     RETURN = 291,
-     L_K = 292,
-     R_K = 293,
-     L_P = 294,
-     R_P = 295,
-     COLON = 296,
-     SEMI = 297,
-     COMMA = 298
+     EXP = 285,
+     NE = 286,
+     EQ = 287,
+     GE = 288,
+     LE = 289,
+     GT = 290,
+     LT = 291,
+     RETURN = 292,
+     L_K = 293,
+     R_K = 294,
+     L_P = 295,
+     R_P = 296,
+     COLON = 297,
+     SEMI = 298,
+     COMMA = 299
    };
 #endif
 
@@ -90,16 +91,19 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 15 ".\\lex.y"
+#line 28 ".\\lex.y"
 
 	int    iValue; 	/* integer value */
 	char   cValue; 	/* char value */
 	char * sValue;  /* string value */
 
+    struct metaData* metValue;
+    struct metaDataPaF* metPaFValue;
+
 
 
 /* Line 1676 of yacc.c  */
-#line 103 "lex.tab.h"
+#line 107 "lex.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
