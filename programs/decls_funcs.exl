@@ -1,9 +1,9 @@
-number g;
+number t;
 
 function teste(number a): number
 {
     number c;
-    number e;
+    number a;
     number c;
 
     return a;
@@ -11,9 +11,9 @@ function teste(number a): number
 
 function main(number a): number
 {
-    number b, c;
+    number d, c;
     number d;
 
-    return teste(g);
+    return teste(t);
     number e;
 }

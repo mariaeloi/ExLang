@@ -1,0 +1,10 @@
+number x, y, c;
+
+function main(number a): number
+{
+    x = 3,141234123;
+    y = 1,2445345;
+    c = 1;
+    print(x**2 - y + c);    
+    number e;
+}
