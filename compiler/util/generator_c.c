@@ -7,7 +7,7 @@ void create_file(char* filename, char* program)  {
     FILE *file_output;
     
     char filename_[100];
-    sprintf(filename_, "solution/%s", filename);
+    sprintf(filename_, "solution/%s.c", filename);
     file_output = fopen(filename_, "w");
 
     if (file_output == NULL) {

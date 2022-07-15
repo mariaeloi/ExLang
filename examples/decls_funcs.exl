@@ -1,4 +1,7 @@
+ExL declsFuncs
+
 number t;
+number o, k;
 
 function teste(number a): number
 {
@@ -10,7 +13,6 @@ function teste(number a): number
 function main(number a): number
 {
     number d, c;
-    number d;
 
     return teste(t);
     number e;

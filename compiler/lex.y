@@ -101,6 +101,7 @@ stmt :  return 								{}
 decl : 	type idlist {
             if(idlist_quantity == 0){
                 char var_scope[MAXSIZE_STRING];
+                sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[idlist_quantity]);
                 insert_symbol(var_scope, $1->type); 
                 multi_idlist[idlist_quantity] = NULL;
                 idlist_quantity--;
@@ -109,9 +110,10 @@ decl : 	type idlist {
                 for(int i = idlist_quantity; i >= 0; i--){
                     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[i]);
                     insert_symbol(var_scope, $1->type); 
-                    multi_idlist[idlist_quantity] = NULL;
-                    idlist_quantity--;
+                    multi_idlist[i] = NULL;
+                    // idlist_quantity--;
                 }
+                idlist_quantity = -1;
             }
         } 
     ;
@@ -210,6 +212,7 @@ term :  ID {
     ;
 
 print_param : V_STRING                      {}
+    |   expr                                {}
     ;
 
 print : PRINT L_P print_param R_P      {}
