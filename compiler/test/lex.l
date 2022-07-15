@@ -48,6 +48,8 @@
 "boolean"              		{printf("BOOLEAN: %s\n", yytext); return(BOOLEAN);}
 "void"										{printf("VOID: %s\n", yytext); return(VOID);}
 "const"										{printf("CONST: %s\n", yytext); return(CONST);}
+"print"						{printf("PRINT: %s\n", yytext); return(PRINT);}
+"ExL"						{printf("EXL: %s\n", yytext); return(EXL);}
 "function"										{printf("FUNCTION: %s\n", yytext); return(FUNCTION);}
 true|false               	{printf("V_BOOLEAN: %s\n", yytext); return(V_BOOLEAN);}
 ['].[']                  	{printf("V_CHAR: %s\n", yytext); return(V_CHAR);}

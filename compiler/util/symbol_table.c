@@ -62,7 +62,7 @@ bool search(char* name){
         symbol_curr = symbol_head;
         char var_scope[MAXSIZE_STRING];
         sprintf(var_scope, "%s.%s", top_stack(&copy), name);
-
+        
         while(true) {
             if(strcmp(symbol_curr->name, var_scope) == 0){
                 return true;
