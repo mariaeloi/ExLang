@@ -1,6 +1,5 @@
 Terminals unused in grammar
 
-   V_STRING
    V_BOOLEAN
    V_CHAR
    CONST
@@ -97,7 +96,7 @@ Grammar
    47 term: ID
    48     | V_NUMBER
 
-   49 print_param: expr
+   49 print_param: V_STRING
 
    50 print: PRINT L_P print_param R_P
 
@@ -107,7 +106,7 @@ Terminals, with rules where they appear
 $end (0) 0
 error (256)
 ID (258) 2 11 15 25 32 33 35 47
-V_STRING (259)
+V_STRING (259) 49
 V_BOOLEAN (260)
 V_CHAR (261)
 V_NUMBER (262) 48
@@ -199,7 +198,7 @@ return (67)
 assign (68)
     on left: 35, on right: 20
 expr (69)
-    on left: 36 37 38, on right: 34 35 37 49
+    on left: 36 37 38, on right: 34 35 37
 op (70)
     on left: 39 40 41 42 43 44, on right: 37
 termlist (71)
@@ -838,12 +837,8 @@ state 69
 
    50 print: PRINT L_P . print_param R_P
 
-    ID        shift, and go to state 64
-    V_NUMBER  shift, and go to state 65
+    V_STRING  shift, and go to state 82
 
-    func_call    go to state 66
-    expr         go to state 82
-    term         go to state 68
     print_param  go to state 83
 
 
@@ -959,7 +954,7 @@ state 81
 
 state 82
 
-   49 print_param: expr .
+   49 print_param: V_STRING .
 
     $default  reduce using rule 49 (print_param)
 

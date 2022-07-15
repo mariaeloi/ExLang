@@ -209,7 +209,7 @@ term :  ID {
 	| V_NUMBER 							   {}
     ;
 
-print_param : expr                                {}
+print_param : V_STRING                      {}
     ;
 
 print : PRINT L_P print_param R_P      {}
