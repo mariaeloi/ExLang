@@ -4,15 +4,16 @@ number t;
 
 function teste(number a): number
 {
-    return a;
+    return "123";
 }
 
-function main(number a): number
+function main(number b): number
 {
     number var, c;
     number t;
-    number z, var, p;
+    number z, var_duplicada, p;
 
-    return teste(t);
-    number e;
+    b = 1;
+
+    return 0;
 }

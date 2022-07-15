@@ -54,7 +54,7 @@
 true|false               	{return(V_BOOLEAN);}
 ['].[']                  	{return(V_CHAR);}
 [+-]?[0-9]+(\.[0-9]+)?		{return(V_NUMBER);}
-["]([A-Za-z0-9+-=*/: ])+["]         {yylval.sValue = strdup(yytext); return(V_STRING);} //Não está funcionando direito
+["]([A-Za-z0-9+-=*/: ])+["]         {yylval.sValue = strdup(yytext); return(V_STRING);}
 ([a-z_]+[a-zA-Z0-9_]?)+     {yylval.sValue = strdup(yytext); return(ID);}
 .                     		{fprintf(stderr, "invalid character: %s\n", yytext);}
 %%

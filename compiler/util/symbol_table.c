@@ -54,7 +54,7 @@ bool insert_symbol(char* name, char* type) {
     return true;
 }
 
-bool search(char* name){
+symbol* search(char* name){
     symbol* symbol_curr;
     struct Stack copy = SCOPE_STACK;
 
@@ -65,7 +65,7 @@ bool search(char* name){
         
         while(true) {
             if(strcmp(symbol_curr->name, var_scope) == 0){
-                return true;
+                return symbol_curr;
             }
             if(symbol_curr->next == NULL){
                 break;
@@ -75,5 +75,5 @@ bool search(char* name){
         pop_stack(&copy);
     }
     
-    return false;
+    return NULL;
 }
