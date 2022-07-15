@@ -102,14 +102,22 @@ decl : 	type idlist {
             if(idlist_quantity == 0){
                 char var_scope[MAXSIZE_STRING];
                 sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[idlist_quantity]);
-                insert_symbol(var_scope, $1->type); 
+                if(!insert_symbol(var_scope, $1->type)) {
+                    printf("->> %s <<-", var_scope);
+                    yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
+                    exit(0);
+                } 
                 multi_idlist[idlist_quantity] = NULL;
                 idlist_quantity--;
             } else {
                 char var_scope[MAXSIZE_STRING];
                 for(int i = idlist_quantity; i >= 0; i--){
                     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[i]);
-                    insert_symbol(var_scope, $1->type); 
+                    if(!insert_symbol(var_scope, $1->type)) {
+                        printf("->> %s <<-", var_scope);
+                        yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
+                        exit(0);
+                    }
                     multi_idlist[i] = NULL;
                     // idlist_quantity--;
                 }

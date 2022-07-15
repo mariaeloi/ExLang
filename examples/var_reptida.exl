@@ -1,0 +1,18 @@
+ExL declsFuncs
+
+number t;
+
+function teste(number a): number
+{
+    return a;
+}
+
+function main(number a): number
+{
+    number var, c;
+    number t;
+    number z, var, p;
+
+    return teste(t);
+    number e;
+}

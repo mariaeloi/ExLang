@@ -31,7 +31,7 @@ symbol* new_symbol(char* name, char* type) {
 //     return next;
 // }
 
-void insert_symbol(char* name, char* type) {
+bool insert_symbol(char* name, char* type) {
     if(symbol_head == NULL) {
         symbol_head = new_symbol(name, type);
     } else {
@@ -40,8 +40,7 @@ void insert_symbol(char* name, char* type) {
         bool stop = false;
         while(!stop) {
             if(strcmp(symbol_curr->name, name) == 0) {
-                printf("A variável '%s' já foi declarada anteriormente\n", name);
-                return;
+                return false;
             }
 
             if(symbol_curr->next != NULL) {
@@ -52,6 +51,7 @@ void insert_symbol(char* name, char* type) {
             }
         }
     }
+    return true;
 }
 
 bool search(char* name){

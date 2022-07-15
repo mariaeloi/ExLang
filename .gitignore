@@ -4,6 +4,7 @@
 *.output
 *.tab.c
 *.tab.h
+*.exe
 LexYaccExamples
 parser
 src2
