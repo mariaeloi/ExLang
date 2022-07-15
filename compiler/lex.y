@@ -171,7 +171,7 @@ idlist : ID                                 {
     idlist_quantity++;
     multi_idlist[idlist_quantity] = $1;
     $$ = concate(3, $1, ",", $3);
-    } // TODO corrigir pois só está pegando o último id
+    }
     ;
 
 return : RETURN expr                        {}
