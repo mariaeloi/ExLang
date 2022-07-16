@@ -1,11 +1,12 @@
 #include <stdio.h>
+#include <math.h>
 
 double x,y,c;
 double main()
 {
-	x=7686664;
-	y=7708608;
-	c=7686728;
-	printf("x");
-	return 7686864;
+	x = 3;
+	y = 1;
+	c = 1;
+	printf("%f", pow(x, 2)   - y + c ) ;
+	return 0;
 }

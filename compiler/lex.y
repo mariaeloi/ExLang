@@ -31,17 +31,15 @@ struct metaDataPaF {
 %}
 
 %union {
-	double    dValue; 	/* integer value */
-	char   cValue; 	/* char value */
 	char * sValue;  /* string value */
 
     struct metaData* metValue;
     struct metaDataPaF* metPaFValue;
 };
 
-%token<sValue> ID V_STRING V_BOOLEAN 
-%token<cValue> V_CHAR
-%token<dValue> V_NUMBER
+%token<sValue> ID V_STRING V_BOOLEAN V_NUMBER V_CHAR
+%token<cValue> 
+%token<dValue> 
 %token CONST VOID FUNCTION MAIN
 %token AND OR
 %token NUMBER STRING CHAR BOOLEAN
@@ -65,13 +63,16 @@ prog : EXL ID {
     ;
 
 body : func_main {}
-    | decls func_main {$$ = concate(2, $1, $2);}
+    | decls func_main {
+        $$ = concate(2, $1, $2);}
     | funcs func_main {}
     | decls funcs func_main {} 
     ;
 
-decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
-    |	decl SEMI decls					       {$$ = concate(3, $1, ";\n", $3);}
+decls : decl SEMI                              {
+    $$ = concate(2, $1, ";\n");}
+    |	decl SEMI decls					       {
+        $$ = concate(3, $1, ";\n", $3);}
     ;
 
 
@@ -93,7 +94,7 @@ funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params {
     ;
 
 func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params {
-        char var_scope[1];
+        char var_scope[MAXSIZE_STRING];
         sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $5->id);
         insert_symbol(var_scope, $5->type);
 } R_P COLON NUMBER {
@@ -106,14 +107,17 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params {
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
-    $$ = concate(6, "double main", "(", "", ")\n{\n", $12, "}");
+    $$ = concate(5, "double main", "(", ")\n{\n", $12, "}");
+    //$$ = "123";
 }
     ;
 
 func_call : ID L_P termlist R_P               {}
 
-stmts : stmt SEMI    				        {$$ = concate(3, "\t",$1, ";\n");}
-	|	stmt SEMI stmts		    		    {$$ = concate(4, "\t", $1, ";\n", $3);}
+stmts : stmt SEMI    				        {
+    $$ = concate(3, "\t",$1, ";\n");}
+	|	stmt SEMI stmts		    		    { 
+        $$ = concate(4, "\t", $1, ";\n", $3)}
     ;
 
 stmt :                                      {}
@@ -225,7 +229,9 @@ return : RETURN expr {
     if(strcmp($2->type, type_return) == 0){
         has_return = true;
     }
-    $$ = concate(3, "return", " ", $2->id);
+    $$ = concate(2, "return ", $2->id);
+    //has_return = true;
+    //$$ = "return 0";
 }
     ;
 
@@ -238,25 +244,41 @@ assign : ID ASSIGN expr   {
         yyerror("VARIAVEL NAO COMPATIVEL COM A ATRIBUICAO");
         exit(0);
     }
-    $$ = concate(3, $1, "=", $3->id);
+    $$ = concate(3, $1, " = ", $3->id);
+    //char* temp = concate(3, $1, " = ", $3->id);
+    //printf("# %s\n", temp);
+    //$$ = temp;
 }
     ;
 
 expr :   term                               {$$ = $1;}
-    | term op expr                          {
+    |  expr op term                            {
+        printf("# %s | %s\n", $1->id, $3->id);
         if(strcmp($1->type, $3->type) == 0){
-            sprintf($1->id, "%s %s %s", $1->id, $2, $3->id);
+            char* temp;
+            if($2 == "**"){
+                temp = concate(5, "pow(",$1->id, ", ", $3->id, ")  ");
+            } else {
+                temp = concate(3, $1->id, $2, $3->id);
+            }
+            struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+            metadata->id = temp;
+            metadata->type = $1->type;
+            metadata->type_c = $1->type_c;
+            $$ = metadata;
+        } else {
+            yyerror("TERMOS NAO COMPATIVEIS!");
+            exit(0);
         }
-        $$ = $1;
     }
     | func_call                             {}
     ;
 
-op :     PLUS                                   {$$ = "+";}
-    |    MINUS                                  {$$ = "-";}
-    |    DIVIDE                                 {$$ = "/";}
-    |    MULTY                                  {$$ = "*";}
-    |    PERCENT                                {$$ = "%";}
+op :     PLUS                                   {$$ = " + ";}
+    |    MINUS                                  {$$ = " - ";}
+    |    DIVIDE                                 {$$ = " / ";}
+    |    MULTY                                  {$$ = " * ";}
+    |    PERCENT                                {$$ = " % ";}
     |    EXP                                    {$$ = "**";}
     ;
 
@@ -288,12 +310,10 @@ term :  ID {
     }
 	| V_NUMBER {
         struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
-        char text[20];
-        sprintf(text, "%d", $1);
-        metadata->id = text;
+        metadata->id = $1;
         metadata->type = "number";
         metadata->type_c = "double";
-        printf("----> V_NUMBER:  %s\n", text);
+        // printf("----> V_NUMBER:  %s\n", $1);
         $$ = metadata;
     }
     | V_STRING                      {
@@ -301,15 +321,22 @@ term :  ID {
         metadata->id = $1;
         metadata->type = "string";
         metadata->type_c = "char*";
-        printf("----> V_STRING:  %s\n", metadata->id);
+        // printf("----> V_STRING:  %s\n", metadata->id);
         $$ = metadata;
     }
     ;
 
-print_param : expr                      {$$ = $1->id;}
+print_param : expr  {
+    char* temp = concate(2, "\"%f\", ", $1->id);
+    printf("temp: %s\n", temp);
+    $$ = temp;
+    //$$ = "x**2 - y + c";
+    }
     ;
 
-print : PRINT L_P print_param R_P      {$$ = concate(3, "printf(\"", $3, "\")");}
+print : PRINT L_P print_param R_P      {
+    $$ = concate(3, "printf(", $3, " ) ");
+    }
     ;
 
 %% /* Fim da segunda seção */
