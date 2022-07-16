@@ -1,0 +1,28 @@
+ExL problema2
+
+function main(): number
+{
+
+    number a;
+    number i_1, i_2, i_3, i_4;
+
+    while(a >= 0){
+        leia(a);
+        
+        if(a >= 0 && a <= 25){
+            i_1++;
+        } else if(a >= 26 && a <= 50){
+            i_2++;
+        } else if(a >= 51 && a <= 75){
+            i_3++;
+        } else if(a >= 76 && a <= 100){
+            i_4++;
+        }
+    }
+
+    print("intervalo [0,25] ", i_1);
+    print("intervalo [26,50] ", i_2);
+    print("intervalo [51,75] ", i_3);
+    print("intervalo [76,100] ", i_4);
+    
+}
