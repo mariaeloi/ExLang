@@ -57,20 +57,17 @@ struct metaDataPaF {
 
 prog : EXL ID {
             push_stack(&SCOPE_STACK, "0");} 
-        body {create_file($2, $4);}
+        body {create_file($2, $4); free($4);}
     ;
 
 body : func_main {}
-    | decls func_main {
-        $$ = concate(2, $1, $2);}
+    | decls func_main {$$ = concate(2, $1, $2); free($1); free($2);}
     | funcs func_main {}
     | decls funcs func_main {} 
     ;
 
-decls : decl SEMI                              {
-    $$ = concate(2, $1, ";\n");}
-    |	decl SEMI decls					       {
-        $$ = concate(3, $1, ";\n", $3);}
+decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
+    |	decl SEMI decls					       {$$ = concate(3, $1, ";\n", $3); free($3);} //
     ;
 
 
@@ -100,22 +97,23 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params {
 } L_K stmts R_K {
     if(!has_return){
         yyerror("ERRO DE RETORNO DO MAIN");
+        free($12);
         exit(0);
     } else {
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
     $$ = concate(5, "double main", "(", ")\n{\n", $12, "}");
-    //$$ = "123";
+    free($12);
 }
     ;
 
 func_call : ID L_P termlist R_P               {}
 
 stmts : stmt SEMI    				        {
-    $$ = concate(3, "\t",$1, ";\n");}
+    $$ = concate(3, "\t",$1, ";\n"); free($1);}
 	|	stmt SEMI stmts		    		    { 
-        $$ = concate(4, "\t", $1, ";\n", $3)}
+        $$ = concate(4, "\t", $1, ";\n", $3); free($1); free($3);}
     ;
 
 stmt :                                      {}
@@ -132,6 +130,8 @@ decl : 	type idlist {
                 sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[idlist_quantity]);
                 if(!insert_symbol(var_scope, $1->type)) {
                     yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
+                    free($1);
+                    free($2);
                     exit(0);
                 } 
                 multi_idlist[idlist_quantity] = NULL;
@@ -142,6 +142,8 @@ decl : 	type idlist {
                     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[i]);
                     if(!insert_symbol(var_scope, $1->type)) {
                         yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
+                        free($1);
+                        free($2);
                         exit(0);
                     }
                     multi_idlist[i] = NULL;
@@ -151,6 +153,8 @@ decl : 	type idlist {
             }
             concate_return = concate(3, $1->type_c, " ", $2);
             $$ = concate_return;
+            free($1);
+            free($2);
         } 
     ;
 
@@ -222,14 +226,14 @@ idlist : ID                                 {
 return : RETURN expr {
     if(strcmp(type_return, "void") == 0){
         yyerror("FUNCAO NAO ESPERA RETORNO!");
+        free($2);
         exit(0);
     }
     if(strcmp($2->type, type_return) == 0){
         has_return = true;
     }
     $$ = concate(2, "return ", $2->id);
-    //has_return = true;
-    //$$ = "return 0";
+    free($2);
 }
     ;
 
@@ -237,15 +241,15 @@ assign : ID ASSIGN expr   {
     symbol* symbol = search($1);
     if(symbol == NULL){
         yyerror("VARIAVEL NAO EXISTE NO ESCOPO DO BLOCO");
+        free($3);
         exit(0);
     } else if (strcmp(symbol->type, $3->type) != 0){
         yyerror("VARIAVEL NAO COMPATIVEL COM A ATRIBUICAO");
+        free($3);
         exit(0);
     }
     $$ = concate(3, $1, " = ", $3->id);
-    //char* temp = concate(3, $1, " = ", $3->id);
-    //printf("# %s\n", temp);
-    //$$ = temp;
+    free($3);
 }
     ;
 
@@ -259,6 +263,8 @@ expr :   term                               {$$ = $1;}
             } else {
                 temp = concate(3, $1->id, $2, $3->id);
             }
+            free($3);
+
             struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
             metadata->id = temp;
             metadata->type = $1->type;
@@ -266,6 +272,8 @@ expr :   term                               {$$ = $1;}
             $$ = metadata;
         } else {
             yyerror("TERMOS NAO COMPATIVEIS!");
+            free($1);
+            free($3);
             exit(0);
         }
     }
@@ -328,12 +336,13 @@ print_param : expr  {
     char* temp = concate(2, "\"%f\", ", $1->id);
     printf("temp: %s\n", temp);
     $$ = temp;
-    //$$ = "x**2 - y + c";
+    free($1); //
     }
     ;
 
 print : PRINT L_P print_param R_P      {
     $$ = concate(3, "printf(", $3, " ) ");
+    free($3);
     }
     ;
 
