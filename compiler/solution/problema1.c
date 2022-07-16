@@ -2,7 +2,7 @@
 #include <math.h>
 
 double x,y,c;
-double main()
+double main(double   b , double   a , char*  d)
 {
 	x = 3.141234123;
 	y = 1.2445345;
