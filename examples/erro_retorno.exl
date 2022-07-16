@@ -1,0 +1,11 @@
+ExL erroRetorno
+
+function teste(char caracter): boolean
+{
+    return caracter;
+}
+
+function main(): number
+{
+    return 0;
+}

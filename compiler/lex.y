@@ -123,7 +123,9 @@ decl : 	type idlist {
                 char var_scope[MAXSIZE_STRING];
                 sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[idlist_quantity]);
                 if(!insert_symbol(var_scope, $1->type)) {
-                    yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
+                    char msg_erro[255];
+                    sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO! (escopo: %s)", multi_idlist[idlist_quantity], top_stack(&SCOPE_STACK));
+                    yyerror(msg_erro);
                     free($1);
                     free($2);
                     exit(0);
@@ -135,7 +137,9 @@ decl : 	type idlist {
                 for(int i = idlist_quantity; i >= 0; i--){
                     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[i]);
                     if(!insert_symbol(var_scope, $1->type)) {
-                        yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
+                        char msg_erro[255];
+                        sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO! (escopo: %s)", multi_idlist[i], top_stack(&SCOPE_STACK));
+                        yyerror(msg_erro);
                         free($1);
                         free($2);
                         exit(0);
