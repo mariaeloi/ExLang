@@ -1,0 +1,9 @@
+ExL readEx
+
+function main(): number
+{
+    char abc;
+    read(abc);
+    print(abc);
+    return 0;
+}

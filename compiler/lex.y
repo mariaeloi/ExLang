@@ -46,9 +46,9 @@ struct metaDataPaF {
 %token NE EQ GE LE GT LT
 %token RETURN EXL 
 %token L_K R_K L_P R_P COLON SEMI COMMA
-%token PRINT
+%token PRINT READ
 
-%type<sValue> idlist decl decls body func_main funcs  print_param print stmt stmts return assign op params
+%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read
 %type<metValue> type result_type
 %type<metPaFValue> param term expr 
 %start prog
@@ -118,6 +118,7 @@ stmt :                                      {}
     |   decl								{$$ = $1;}
     |   assign								{$$ = $1;}
     |   print                               {$$ = $1;}
+    |   read                                {$$ = $1;}
     ;
 
 decl : 	type idlist {
@@ -359,6 +360,38 @@ print : PRINT L_P print_param R_P      {
     $$ = concate(3, "printf(", $3, " ) ");
     free($3);
     }
+    ;
+
+read : READ L_P ID R_P                  {
+    symbol* symbol = search($3);
+    if(symbol == NULL){
+        yyerror("VARIAVEL NAO EXISTE NO ESCOPO DO BLOCO");
+        free($3);
+        exit(0);
+    } else {
+        char type_format;
+        if(strcmp(symbol->type, "number") == 0){
+            printf("READ: number\n");
+            type_format = 'f';
+        } 
+        else if(strcmp(symbol->type, "string") == 0){
+            printf("READ: string\n");
+            type_format = 's';
+        } else if(strcmp(symbol->type, "char") == 0){
+            printf("READ: char\n");
+            type_format = 'c';
+        } else {
+            yyerror("BOOLEAN NAO EH COMPATIVEL COM READ");
+            exit(0);
+        }
+        char temp[100];
+        sprintf(temp, "scanf(\"%%%c\", &%s)", type_format, $3);
+
+        // char *temp = concate(5, "scanf(\"%%", type_format, "\", &", symbol->name, ")  ");
+        printf("READ: %s\n", temp);
+        $$ = temp;
+    }
+}
     ;
 
 %% /* Fim da segunda seção */

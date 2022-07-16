@@ -50,6 +50,7 @@
 "const"						{return(CONST);}
 "function"					{return(FUNCTION);}
 "print"						{return(PRINT);}
+"read"						{return(READ);}
 "ExL"						{return(EXL);}
 true|false               	{return(V_BOOLEAN);}
 ['].[']                  	{return(V_CHAR);}

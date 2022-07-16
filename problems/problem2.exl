@@ -7,7 +7,7 @@ function main(): number
     number i_1, i_2, i_3, i_4;
 
     while(a >= 0){
-        leia(a);
+        read(a);
         
         if(a >= 0 && a <= 25){
             i_1++;
