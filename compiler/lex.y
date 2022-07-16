@@ -48,9 +48,9 @@ struct metaDataPaF {
 %token L_K R_K L_P R_P COLON SEMI COMMA
 %token PRINT
 
-%type<sValue> idlist decl decls body func_main funcs  print_param print stmt stmts return assign op
+%type<sValue> idlist decl decls body func_main funcs  print_param print stmt stmts return assign op params
 %type<metValue> type result_type
-%type<metPaFValue> param term expr params
+%type<metPaFValue> param term expr 
 %start prog
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
@@ -74,12 +74,8 @@ decls : decl SEMI                              {
     ;
 
 
-funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params {
-    char var_scope[1];
-    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $5->id);
-    insert_symbol(var_scope, $5->type);
-} R_P COLON result_type {
-    type_return = $9->type;
+funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params R_P COLON result_type {
+    type_return = $8->type;
 } L_K stmts R_K  {
     if(!has_return){
         yyerror("ERRO DE RETORNO DA FUNCAO");
@@ -91,11 +87,7 @@ funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params {
 }
     ;
 
-func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params {
-        char var_scope[MAXSIZE_STRING];
-        sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $5->id);
-        insert_symbol(var_scope, $5->type);
-} R_P COLON NUMBER {
+func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params R_P COLON NUMBER {
     type_return = "number";
 } L_K stmts R_K {
     if(!has_return){
@@ -105,7 +97,7 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params {
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
-    $$ = concate(5, "double main", "(", ")\n{\n", $12, "}");
+    $$ = concate(6, "double main", "(", $5, ")\n{\n", $11, "}\n");
     //$$ = "123";
 }
     ;
@@ -154,12 +146,22 @@ decl : 	type idlist {
         } 
     ;
 
-params : param                                {$$ = $1;}
+params : param                                {
+    char var_scope[MAXSIZE_STRING];
+    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
+    insert_symbol(var_scope, $1->type);
+    $$ = concate(3, $1->type_c, "  ", $1->id);
+    }
     |	param COMMA params			        {
+    char var_scope[MAXSIZE_STRING];
+    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
 
-        //params : param                                {$$ = concate(2, $1->type_c, $1->id);}
-        // |	param COMMA params			        {$$ = concate(4, $1->type_c, $1->id, ",", $3);}
-        // ;
+    symbol* temp = search(var_scope);
+    if(!(temp == NULL && insert_symbol(var_scope, $1->type))) {
+        yyerror("NOME DE VARIAVEIS IGUAIS NOS PARAMETROS DA FUNCAO");
+        exit(0);
+    }
+    $$ = concate(5, $1->type_c, "   ", $1->id, " , ", $3);
     }
 
     ;
@@ -251,7 +253,6 @@ assign : ID ASSIGN expr   {
 
 expr :   term                               {$$ = $1;}
     |  expr op term                            {
-        printf("# %s | %s\n", $1->id, $3->id);
         if(strcmp($1->type, $3->type) == 0){
             char* temp;
             if($2 == "**"){
@@ -326,7 +327,6 @@ term :  ID {
 
 print_param : expr  {
     char* temp = concate(2, "\"%f\", ", $1->id);
-    printf("temp: %s\n", temp);
     $$ = temp;
     //$$ = "x**2 - y + c";
     }
