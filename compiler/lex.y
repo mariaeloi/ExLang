@@ -60,11 +60,13 @@ prog : EXL ID {
         body {create_file($2, $4);}
     ;
 
-body : func_main {}
+body : func_main { $$ = $1; }
     | decls func_main {
         $$ = concate(2, $1, $2);}
-    | funcs func_main {}
-    | decls funcs func_main {} 
+    | funcs func_main { }
+    | decls funcs func_main {
+        $$ = concate(3, $1, $2, $3);
+    } 
     ;
 
 decls : decl SEMI                              {
@@ -87,7 +89,7 @@ funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params R_P COLON result_
 }
     ;
 
-func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params R_P COLON NUMBER {
+func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P COLON NUMBER {
     type_return = "number";
 } L_K stmts R_K {
     if(!has_return){
@@ -105,14 +107,15 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params R_P COL
 func_call : ID L_P termlist R_P               {}
 
 stmts : stmt SEMI    				        {
-    $$ = concate(3, "\t",$1, ";\n");}
+    $$ = concate(3, "\t",$1, ";\n");
+    }
 	|	stmt SEMI stmts		    		    { 
         $$ = concate(4, "\t", $1, ";\n", $3)}
     ;
 
 stmt :                                      {}
     |   return 								{$$ = $1;}
-    |   decl								{}
+    |   decl								{$$ = $1;}
     |   assign								{$$ = $1;}
     |   print                               {$$ = $1;}
     ;
@@ -141,23 +144,26 @@ decl : 	type idlist {
                 }
                 idlist_quantity = -1;
             }
-            concate_return = concate(3, $1->type_c, " ", $2);
+            concate_return = concate(3, $1->type_c, "  ", $2);
             $$ = concate_return;
         } 
     ;
 
-params : param                                {
-    char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
-    insert_symbol(var_scope, $1->type);
-    $$ = concate(3, $1->type_c, "  ", $1->id);
+params : param  {
+        if($1->id == "  "){
+            $$ = "  ";
+        } else {
+            char var_scope[MAXSIZE_STRING];
+            sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
+            insert_symbol(var_scope, $1->type);
+            $$ = concate(3, $1->type_c, "  ", $1->id);
+        }
     }
     |	param COMMA params			        {
     char var_scope[MAXSIZE_STRING];
     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
 
-    symbol* temp = search(var_scope);
-    if(!(temp == NULL && insert_symbol(var_scope, $1->type))) {
+    if(!insert_symbol(var_scope, $1->type)) {
         yyerror("NOME DE VARIAVEIS IGUAIS NOS PARAMETROS DA FUNCAO");
         exit(0);
     }
@@ -166,7 +172,10 @@ params : param                                {
 
     ;
 
-param : {}
+param : {
+    struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+    metadata->id = "  ";
+    $$ = metadata;}
 | type ID {
     struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
     metadata->id = $2;
@@ -217,7 +226,7 @@ idlist : ID                                 {
     |   ID COMMA idlist                     { 
     idlist_quantity++;
     multi_idlist[idlist_quantity] = $1;
-    $$ = concate(3, $1, ",", $3);
+    $$ = concate(3, $1, " , ", $3);
     }
     ;
 
@@ -245,9 +254,6 @@ assign : ID ASSIGN expr   {
         exit(0);
     }
     $$ = concate(3, $1, " = ", $3->id);
-    //char* temp = concate(3, $1, " = ", $3->id);
-    //printf("# %s\n", temp);
-    //$$ = temp;
 }
     ;
 
