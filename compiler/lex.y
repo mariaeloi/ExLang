@@ -38,8 +38,6 @@ struct metaDataPaF {
 };
 
 %token<sValue> ID V_STRING V_BOOLEAN V_NUMBER V_CHAR
-%token<cValue> 
-%token<dValue> 
 %token CONST VOID FUNCTION MAIN
 %token AND OR
 %token NUMBER STRING CHAR BOOLEAN
