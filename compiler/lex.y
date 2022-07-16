@@ -319,14 +319,17 @@ term :  ID {
             struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
             metadata->id = $1;
             metadata->type = symbol->type;
-            if(symbol->type == "number"){
+            if(strcmp(symbol->type, "number") == 0){
                 metadata->type_c = "double";
-            } else if(symbol->type == "string"){
+            } else if(strcmp(symbol->type, "string") == 0){
                 metadata->type_c = "char*";
-            } else if(symbol->type == "boolean"){
+            } else if(strcmp(symbol->type, "boolean") == 0){
                 metadata->type_c = "bool";
-            } else if(symbol->type == "char"){
+            } else if(strcmp(symbol->type, "char") == 0){
                 metadata->type_c = "char";
+            } else {
+                yyerror("TIPO INVALIDO");
+                exit(0);
             }
             $$ = metadata;
         }
