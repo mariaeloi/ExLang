@@ -2,7 +2,7 @@ ExL problema1
 
 number x, y, c;
 
-function main(number a): number
+function main(): number
 {
     x = 3.141234123;
     y = 1.2445345;

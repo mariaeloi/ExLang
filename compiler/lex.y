@@ -31,7 +31,7 @@ struct metaDataPaF {
 %}
 
 %union {
-	int    iValue; 	/* integer value */
+	double    dValue; 	/* integer value */
 	char   cValue; 	/* char value */
 	char * sValue;  /* string value */
 
@@ -41,7 +41,7 @@ struct metaDataPaF {
 
 %token<sValue> ID V_STRING V_BOOLEAN 
 %token<cValue> V_CHAR
-%token<iValue> V_NUMBER
+%token<dValue> V_NUMBER
 %token CONST VOID FUNCTION MAIN
 %token AND OR
 %token NUMBER STRING CHAR BOOLEAN
@@ -52,26 +52,26 @@ struct metaDataPaF {
 %token L_K R_K L_P R_P COLON SEMI COMMA
 %token PRINT
 
-%type<sValue> idlist
+%type<sValue> idlist decl decls body func_main funcs  print_param print stmt stmts return assign op
 %type<metValue> type result_type
-%type<metPaFValue> param params term expr
+%type<metPaFValue> param term expr params
 %start prog
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
 
 prog : EXL ID {
             push_stack(&SCOPE_STACK, "0");} 
-        body {create_file($2, "nada ainda");}
+        body {create_file($2, $4);}
     ;
 
 body : func_main {}
-    | decls func_main {}
+    | decls func_main {$$ = concate(2, $1, $2);}
     | funcs func_main {}
     | decls funcs func_main {} 
     ;
 
-decls : decl SEMI                              {}
-    |	decl SEMI decls					        {}
+decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
+    |	decl SEMI decls					       {$$ = concate(3, $1, ";\n", $3);}
     ;
 
 
@@ -106,28 +106,29 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main");} L_P params {
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
+    $$ = concate(6, "double main", "(", "", ")\n{\n", $12, "}");
 }
     ;
 
 func_call : ID L_P termlist R_P               {}
 
-stmts : stmt SEMI    				            {}
-	|	stmt SEMI stmts		    		    {}
+stmts : stmt SEMI    				        {$$ = concate(3, "\t",$1, ";\n");}
+	|	stmt SEMI stmts		    		    {$$ = concate(4, "\t", $1, ";\n", $3);}
     ;
 
-stmt :                                      {printf("123");}
-    |   return 								{}
+stmt :                                      {}
+    |   return 								{$$ = $1;}
     |   decl								{}
-    |   assign								{}
-    |   print                               {}
+    |   assign								{$$ = $1;}
+    |   print                               {$$ = $1;}
     ;
 
 decl : 	type idlist {
+            char* concate_return;
             if(idlist_quantity == 0){
                 char var_scope[MAXSIZE_STRING];
                 sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[idlist_quantity]);
                 if(!insert_symbol(var_scope, $1->type)) {
-                    printf("->> %s <<-", var_scope);
                     yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
                     exit(0);
                 } 
@@ -138,7 +139,6 @@ decl : 	type idlist {
                 for(int i = idlist_quantity; i >= 0; i--){
                     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[i]);
                     if(!insert_symbol(var_scope, $1->type)) {
-                        printf("->> %s <<-", var_scope);
                         yyerror("IDENTIFICADOR JA FOI DECLARADO NO ESCOPO!");
                         exit(0);
                     }
@@ -147,14 +147,23 @@ decl : 	type idlist {
                 }
                 idlist_quantity = -1;
             }
+            concate_return = concate(3, $1->type_c, " ", $2);
+            $$ = concate_return;
         } 
     ;
 
 params : param                                {$$ = $1;}
-    |	param COMMA params			        {}
+    |	param COMMA params			        {
+
+        //params : param                                {$$ = concate(2, $1->type_c, $1->id);}
+        // |	param COMMA params			        {$$ = concate(4, $1->type_c, $1->id, ",", $3);}
+        // ;
+    }
+
     ;
 
-param : type ID {
+param : {}
+| type ID {
     struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
     metadata->id = $2;
     metadata->type = $1->type;
@@ -216,6 +225,7 @@ return : RETURN expr {
     if(strcmp($2->type, type_return) == 0){
         has_return = true;
     }
+    $$ = concate(3, "return", " ", $2->id);
 }
     ;
 
@@ -228,20 +238,26 @@ assign : ID ASSIGN expr   {
         yyerror("VARIAVEL NAO COMPATIVEL COM A ATRIBUICAO");
         exit(0);
     }
+    $$ = concate(3, $1, "=", $3->id);
 }
     ;
 
 expr :   term                               {$$ = $1;}
-    | term op expr                          {}
+    | term op expr                          {
+        if(strcmp($1->type, $3->type) == 0){
+            sprintf($1->id, "%s %s %s", $1->id, $2, $3->id);
+        }
+        $$ = $1;
+    }
     | func_call                             {}
     ;
 
-op :     PLUS                                   {}
-    |    MINUS                                  {}
-    |    DIVIDE                                 {}
-    |    MULTY                                  {}
-    |    PERCENT                                {}
-    |    EXP                                    {}
+op :     PLUS                                   {$$ = "+";}
+    |    MINUS                                  {$$ = "-";}
+    |    DIVIDE                                 {$$ = "/";}
+    |    MULTY                                  {$$ = "*";}
+    |    PERCENT                                {$$ = "%";}
+    |    EXP                                    {$$ = "**";}
     ;
 
 termlist : term                 {}
@@ -277,6 +293,7 @@ term :  ID {
         metadata->id = text;
         metadata->type = "number";
         metadata->type_c = "double";
+        printf("----> V_NUMBER:  %s\n", text);
         $$ = metadata;
     }
     | V_STRING                      {
@@ -284,14 +301,15 @@ term :  ID {
         metadata->id = $1;
         metadata->type = "string";
         metadata->type_c = "char*";
+        printf("----> V_STRING:  %s\n", metadata->id);
         $$ = metadata;
     }
     ;
 
-print_param : V_STRING                      {}
+print_param : expr                      {$$ = $1->id;}
     ;
 
-print : PRINT L_P print_param R_P      {}
+print : PRINT L_P print_param R_P      {$$ = concate(3, "printf(\"", $3, "\")");}
     ;
 
 %% /* Fim da segunda seção */
