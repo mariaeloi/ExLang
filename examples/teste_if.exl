@@ -1,0 +1,12 @@
+ExL teste_if
+
+function main(): number
+{
+    number numero;
+    read(numero);
+    if(numero > 0) {
+        print(numero);
+    };
+    
+    return 1.20;
+}

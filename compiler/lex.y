@@ -48,7 +48,7 @@ struct metaDataPaF {
 %token L_K R_K L_P R_P COLON SEMI COMMA
 %token PRINT READ
 
-%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read
+%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read compare_op if
 %type<metValue> type result_type
 %type<metPaFValue> param term expr 
 %start prog
@@ -107,10 +107,8 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P CO
 
 func_call : ID L_P termlist R_P               {}
 
-stmts : stmt SEMI    				        {
-    $$ = concate(3, "\t",$1, ";\n"); free($1);}
-	|	stmt SEMI stmts		    		    { 
-        $$ = concate(4, "\t", $1, ";\n", $3); free($1); free($3);}
+stmts : stmt SEMI    				        {$$ = concate(3, "\t",$1, ";\n"); free($1);}
+	|	stmt SEMI stmts		    		    {$$ = concate(4, "\t", $1, ";\n", $3); free($1); free($3);}
     ;
 
 stmt :                                      {}
@@ -119,6 +117,7 @@ stmt :                                      {}
     |   assign								{$$ = $1;}
     |   print                               {$$ = $1;}
     |   read                                {$$ = $1;}
+    |   if                                  {printf("IF value:\n%s", $1); $$ = $1;}
     ;
 
 decl : 	type idlist {
@@ -294,7 +293,16 @@ expr :   term                               {$$ = $1;}
             exit(0);
         }
     }
-    | func_call                             {}
+    |   func_call                             {}
+    |   expr compare_op term                  {
+        // TODO realizar verificações
+        char *temp = concate(3, $1->id, $2, $3->id);
+        struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+        metadata->id = temp;
+        metadata->type = "boolean";
+        metadata->type_c = "bool";
+        $$ = metadata;
+    }
     ;
 
 op :     PLUS                                   {$$ = " + ";}
@@ -305,10 +313,17 @@ op :     PLUS                                   {$$ = " + ";}
     |    EXP                                    {$$ = "**";}
     ;
 
+compare_op: EQ                  {$$ = "==";}
+    |   NE                      {$$ = "!=";}
+    |   LE                      {$$ = "<=";}
+    |   LT                      {$$ = " < ";}
+    |   GE                      {$$ = ">=";}
+    |   GT                      {$$ = " > ";}
+    ;
+
 termlist : term                 {}
     |	term COMMA termlist     {}
     ;
-
 
 term :  ID {
         symbol* symbol = search($1);
@@ -372,29 +387,49 @@ read : READ L_P ID R_P                  {
         free($3);
         exit(0);
     } else {
-        char type_format;
+        char *temp;
         if(strcmp(symbol->type, "number") == 0){
             printf("READ: number\n");
-            type_format = 'f';
+            temp = concate(3, "scanf(\"%lf\", &", $3, " ) ");
         } 
         else if(strcmp(symbol->type, "string") == 0){
             printf("READ: string\n");
-            type_format = 's';
+            temp = concate(3, "scanf(\"%s\", &", $3, " ) ");
         } else if(strcmp(symbol->type, "char") == 0){
             printf("READ: char\n");
-            type_format = 'c';
+            temp = concate(3, "scanf(\"%c\", &", $3, " ) ");
         } else {
             yyerror("BOOLEAN NAO EH COMPATIVEL COM READ");
             exit(0);
         }
-        char temp[100];
-        sprintf(temp, "scanf(\"%%%c\", &%s)", type_format, $3);
-
-        // char *temp = concate(5, "scanf(\"%%", type_format, "\", &", symbol->name, ")  ");
-        printf("READ: %s\n", temp);
         $$ = temp;
     }
 }
+    ;
+
+if : IF L_P expr {
+    if(strcmp($3->type, "boolean") != 0){
+        yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
+        free($3);
+        exit(0);
+    }
+    printf("expr IF: %s\n", $3->id);
+} R_P L_K {
+    char var_scope[MAXSIZE_STRING];
+    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), "if");
+    printf("id IF: %s\n", var_scope);
+    if(!insert_symbol(var_scope, "IF")) {
+        char msg_erro[255];
+        sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO!", var_scope);
+        yyerror(msg_erro);
+        exit(0);
+    }
+} stmts R_K {
+    $$ = concate(5, "if (!(", $3->id, ")) goto skip_if;\n\t{\n\t", $8, "\t}\n\tskip_if:\n");
+    free($3);
+    free($8);
+}
+
     ;
 
 %% /* Fim da segunda seção */

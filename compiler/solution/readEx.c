@@ -4,7 +4,7 @@
 double main(  )
 {
 	char  abc;
-	scanf("%c", &abc);
+	scanf("%c", &abc ) ;
 	printf("%f", abc ) ;
 	return 0;
 }
