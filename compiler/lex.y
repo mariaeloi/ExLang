@@ -39,7 +39,7 @@ int count_selection = 0;
     struct metaDataPaF* metPaFValue;
 };
 
-%token<sValue> ID V_STRING V_BOOLEAN V_NUMBER V_CHAR
+%token<sValue> ID ID_read V_STRING V_BOOLEAN V_NUMBER V_CHAR
 %token CONST VOID FUNCTION MAIN
 %token AND OR
 %token NUMBER STRING CHAR BOOLEAN
@@ -101,7 +101,7 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P CO
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
-    $$ = concate(6, "double main", "(", $5, ")\n{\n", $11, "}\n");
+    $$ = concate(6, "double main", " ( ", $5, ")\n{\n", $11, "}\n");
     free($5);
     free($11);
 }
@@ -109,8 +109,15 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P CO
 
 func_call : ID L_P termlist R_P               {}
 
-stmts : stmt SEMI    				        {$$ = concate(3, "\t",$1, ";\n"); free($1);}
-	|	stmt SEMI stmts		    		    {$$ = concate(4, "\t", $1, ";\n", $3); free($1); free($3);}
+stmts : stmt SEMI    				        {
+    //$$ = concate(3, "\t", $1, "  \n"); free($1);
+    $$ = $1;
+    }
+	|	stmt SEMI stmts		    		    {
+
+        $$ = concate(4, "\t", $1, "  \n", $3); free($1); free($3);
+        //$$ = concate(2, $1, $3);
+        }
     ;
 
 stmt :                                      {}
@@ -155,7 +162,7 @@ decl : 	type idlist {
                 }
                 idlist_quantity = -1;
             }
-            concate_return = concate(3, $1->type_c, "  ", $2);
+            concate_return = concate(4, $1->type_c, "  ", $2, " ;  ");
             $$ = concate_return;
             free($1);
             free($2);
@@ -252,7 +259,7 @@ return : RETURN expr {
     if(strcmp($2->type, type_return) == 0){
         has_return = true;
     }
-    $$ = concate(2, "return ", $2->id);
+    $$ = concate(3, "return ", $2->id, " ;  ");
     free($2);
 }
     ;
@@ -268,7 +275,7 @@ assign : ID ASSIGN expr   {
         free($3);
         exit(0);
     }
-    $$ = concate(3, $1, " = ", $3->id);
+    $$ = concate(4, $1, " = ", $3->id, ";  ");
     free($3);
 }
     ;
@@ -278,7 +285,7 @@ expr :   term                               {$$ = $1;}
         if(strcmp($1->type, $3->type) == 0){
             char* temp;
             if($2 == "**"){
-                temp = concate(5, "pow(",$1->id, ", ", $3->id, ")  ");
+                temp = concate(5, "pow(",$1->id, ", ", $3->id, " )  ");
             } else {
                 temp = concate(3, $1->id, $2, $3->id);
             }
@@ -384,36 +391,49 @@ term :  ID {
     ;
 
 print_param : expr  {
-    char* temp = concate(2, "\"%f\", ", $1->id);
+    char* temp;
+    
+    if(strcmp($1->type, "number") == 0){
+        temp = concate(2, "\"%f\" , ", $1->id);
+    } else if(strcmp($1->type, "string") == 0){
+        temp = concate(2, "\"%s\" , ", $1->id);
+    } else if(strcmp($1->type, "char") == 0){
+        temp = concate(2, "\"%c\" , ", $1->id);
+    } else {
+        yyerror("TIPO DE ELEMENTO NAO ACEITO NO PRINT");
+        exit(0);
+    }
     $$ = temp;
-    free($1); //
+    free($1);
     }
     ;
 
 print : PRINT L_P print_param R_P      {
-    $$ = concate(3, "printf(", $3, " ) ");
+    $$ = concate(3, "printf(", $3, " ); ");
     free($3);
     }
     ;
 
-read : READ L_P ID R_P                  {
-    symbol* symbol = search($3);
+read : READ L_P ID_read R_P                  {
+    char* t = strtok($3, "&");
+    symbol* symbol = search(t);
+
     if(symbol == NULL){
         yyerror("VARIAVEL NAO EXISTE NO ESCOPO DO BLOCO");
         free($3);
         exit(0);
     } else {
-        char *temp;
+        char* temp;
         if(strcmp(symbol->type, "number") == 0){
             printf("READ: number\n");
-            temp = concate(3, "scanf(\"%lf\", &", $3, " ) ");
+            temp = concate(3, "scanf(\"%lf\", ", $3, " ); ");
         } 
         else if(strcmp(symbol->type, "string") == 0){
             printf("READ: string\n");
-            temp = concate(3, "scanf(\"%s\", &", $3, " ) ");
+            temp = concate(3, "scanf(\"%s\", ", $3, " ); ");
         } else if(strcmp(symbol->type, "char") == 0){
             printf("READ: char\n");
-            temp = concate(3, "scanf(\"%c\", &", $3, " ) ");
+            temp = concate(3, "scanf(\"%c\", ", $3, " ); ");
         } else {
             yyerror("BOOLEAN NAO EH COMPATIVEL COM READ");
             exit(0);
@@ -439,7 +459,8 @@ if : IF L_P expr {
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
     sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
-    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
+    $$ = "123";
+    //$$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
     pop_stack(&SCOPE_STACK);
     printf("top: %s\n", top_stack(&SCOPE_STACK));
     free($3);

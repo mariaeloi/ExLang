@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <math.h>
 
-double main(  )
+double main (   )
 {
-	char  abc;
-	scanf("%c", &abc ) ;
-	printf("%f", abc ) ;
-	return 0;
-}
+	char  abc ;    
+	scanf("%c", &abc );   
+	printf("%c" , abc );   
+return 0 ;  }
