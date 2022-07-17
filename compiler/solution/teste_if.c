@@ -5,11 +5,11 @@ double main(  )
 {
 	double  numero;
 	scanf("%lf", &numero ) ;
-	if (!(numero > 0)) goto skip_if;
+	if (!(numero > 0)) goto main_if1_skip;
 	{
 	printf("%f", numero ) ;
 	}
-	skip_if:
+	main_if1_skip:
 ;
 	return 1.20;
 }

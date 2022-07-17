@@ -28,6 +28,8 @@ struct metaDataPaF {
     char* type_c;
 };
 
+int count_selection = 0;
+
 %}
 
 %union {
@@ -48,7 +50,7 @@ struct metaDataPaF {
 %token L_K R_K L_P R_P COLON SEMI COMMA
 %token PRINT READ
 
-%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read compare_op if while
+%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read compare_op if while logic_op
 %type<metValue> type result_type
 %type<metPaFValue> param term expr 
 %start prog
@@ -117,8 +119,8 @@ stmt :                                      {}
     |   assign								{$$ = $1;}
     |   print                               {$$ = $1;}
     |   read                                {$$ = $1;}
-    |   if                                  {printf("IF value:\n%s", $1); $$ = $1;}
-    |   while                               {printf("WHILE value:\n%s", $1); $$ = $1;}
+    |   if                                  {$$ = $1;}
+    |   while                               {$$ = $1;}
     ;
 
 decl : 	type idlist {
@@ -304,6 +306,15 @@ expr :   term                               {$$ = $1;}
         metadata->type_c = "bool";
         $$ = metadata;
     }
+    |   expr logic_op term                  {
+        // TODO realizar verificações
+        char *temp = concate(3, $1->id, $2, $3->id);
+        struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+        metadata->id = temp;
+        metadata->type = "boolean";
+        metadata->type_c = "bool";
+        $$ = metadata;
+    }
     ;
 
 op :     PLUS                                   {$$ = " + ";}
@@ -320,6 +331,10 @@ compare_op: EQ                  {$$ = " == ";}
     |   LT                      {$$ = " < ";}
     |   GE                      {$$ = " >= ";}
     |   GT                      {$$ = " > ";}
+    ;
+
+logic_op:   AND                 {$$ = " && ";}
+    |   OR                      {$$ = " || ";}
     ;
 
 termlist : term                 {}
@@ -416,18 +431,17 @@ if : IF L_P expr {
     }
     printf("expr IF: %s\n", $3->id);
 } R_P L_K {
+    count_selection++;
     char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), "if");
+    sprintf(var_scope, "%s_%s%d", top_stack(&SCOPE_STACK), "if", count_selection);
     printf("id IF: %s\n", var_scope);
-    if(!insert_symbol(var_scope, "IF")) {
-        char msg_erro[255];
-        sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO!", var_scope);
-        yyerror(msg_erro);
-        exit(0);
-    }
-    // TODO ajustar para alterar escopo
+    push_stack(&SCOPE_STACK, var_scope);
 } stmts R_K {
-    $$ = concate(5, "if (!(", $3->id, ")) goto skip_if;\n\t{\n", $8, "\t}\n\tskip_if:\n");
+    char var_skip[MAXSIZE_STRING];
+    sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
+    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
+    pop_stack(&SCOPE_STACK);
+    printf("top: %s\n", top_stack(&SCOPE_STACK));
     free($3);
     free($8);
 }
@@ -441,18 +455,16 @@ while : WHILE L_P expr {
     }
     printf("expr WHILE: %s\n", $3->id);
 } R_P L_K {
+    count_selection++;
     char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), "while");
+    sprintf(var_scope, "%s_%s%d", top_stack(&SCOPE_STACK), "while", count_selection);
     printf("id WHILE: %s\n", var_scope);
-    if(!insert_symbol(var_scope, "WHILE")) {
-        char msg_erro[255];
-        sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO!", var_scope);
-        yyerror(msg_erro);
-        exit(0);
-    }
-    // TODO ajustar para alterar escopo
+    push_stack(&SCOPE_STACK, var_scope);
 } stmts R_K {
-    $$ = concate(8, "main_while", ":\n\tif (!(", $3->id, ")) goto skip_while;\n\t{\n", $8, "\t}\n\tgoto ", "main_while", ";\n\tskip_while:\n");
+    char var_skip[MAXSIZE_STRING];
+    sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
+    $$ = concate(12, top_stack(&SCOPE_STACK), ":\n\tif (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\tgoto ", top_stack(&SCOPE_STACK), ";\n\t", var_skip, ":\n");
+    pop_stack(&SCOPE_STACK);
     free($3);
     free($8);
 }
