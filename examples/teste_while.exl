@@ -1,0 +1,16 @@
+ExL teste_while
+
+function main(): number
+{
+    number numero;
+    numero = 1;
+    
+    while(numero >= 0) {
+        read(numero);
+        if(numero < 0) {
+            print(numero);
+        };
+    };
+    
+    return 0;
+}

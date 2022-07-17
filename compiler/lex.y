@@ -48,7 +48,7 @@ struct metaDataPaF {
 %token L_K R_K L_P R_P COLON SEMI COMMA
 %token PRINT READ
 
-%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read compare_op if
+%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read compare_op if while
 %type<metValue> type result_type
 %type<metPaFValue> param term expr 
 %start prog
@@ -118,6 +118,7 @@ stmt :                                      {}
     |   print                               {$$ = $1;}
     |   read                                {$$ = $1;}
     |   if                                  {printf("IF value:\n%s", $1); $$ = $1;}
+    |   while                               {printf("WHILE value:\n%s", $1); $$ = $1;}
     ;
 
 decl : 	type idlist {
@@ -313,11 +314,11 @@ op :     PLUS                                   {$$ = " + ";}
     |    EXP                                    {$$ = "**";}
     ;
 
-compare_op: EQ                  {$$ = "==";}
-    |   NE                      {$$ = "!=";}
-    |   LE                      {$$ = "<=";}
+compare_op: EQ                  {$$ = " == ";}
+    |   NE                      {$$ = " != ";}
+    |   LE                      {$$ = " <= ";}
     |   LT                      {$$ = " < ";}
-    |   GE                      {$$ = ">=";}
+    |   GE                      {$$ = " >= ";}
     |   GT                      {$$ = " > ";}
     ;
 
@@ -424,12 +425,37 @@ if : IF L_P expr {
         yyerror(msg_erro);
         exit(0);
     }
+    // TODO ajustar para alterar escopo
 } stmts R_K {
-    $$ = concate(5, "if (!(", $3->id, ")) goto skip_if;\n\t{\n\t", $8, "\t}\n\tskip_if:\n");
+    $$ = concate(5, "if (!(", $3->id, ")) goto skip_if;\n\t{\n", $8, "\t}\n\tskip_if:\n");
     free($3);
     free($8);
 }
+    ;
 
+while : WHILE L_P expr {
+    if(strcmp($3->type, "boolean") != 0){
+        yyerror("A CONDICAO DE UM WHILE DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
+        free($3);
+        exit(0);
+    }
+    printf("expr WHILE: %s\n", $3->id);
+} R_P L_K {
+    char var_scope[MAXSIZE_STRING];
+    sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), "while");
+    printf("id WHILE: %s\n", var_scope);
+    if(!insert_symbol(var_scope, "WHILE")) {
+        char msg_erro[255];
+        sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO!", var_scope);
+        yyerror(msg_erro);
+        exit(0);
+    }
+    // TODO ajustar para alterar escopo
+} stmts R_K {
+    $$ = concate(8, "main_while", ":\n\tif (!(", $3->id, ")) goto skip_while;\n\t{\n", $8, "\t}\n\tgoto ", "main_while", ";\n\tskip_while:\n");
+    free($3);
+    free($8);
+}
     ;
 
 %% /* Fim da segunda seção */

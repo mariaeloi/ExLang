@@ -7,7 +7,7 @@ double main(  )
 	scanf("%lf", &numero ) ;
 	if (!(numero > 0)) goto skip_if;
 	{
-		printf("%f", numero ) ;
+	printf("%f", numero ) ;
 	}
 	skip_if:
 ;
