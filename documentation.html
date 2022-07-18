@@ -174,17 +174,20 @@
 
     <h2 id="semantico">Analisador Semântico</h2>
     <p>
-        <b>Variável existe</b><br>
+        <b>Variável/função existe</b><br>
         O compilador verifica se a variável que foi chamada existe no escopo do bloco onde está.<br>
         É feita uma busca nos escopos anteriores, utilizado do sistema de escopo estático, verificando se a variável foi declarada em um escopo visível do bloco.<br>
         <br>
-        <b>Variável duplicada</b><br>
+        <b>Variável/função duplicada</b><br>
         O compilador verifica se a variável que foi declarada já foi declarada no bloco onde está.<br>
         É feito uma verificação, se a variável 'nome_escopo'.'nome_variavel' está na tabela de símbolos.<br>
         <br>
         <b>Tipo de retorno da função</b><br>
         O compilador verifica se o retorno da função é o tipo de retorno esperado.<br>
         É feito uma verificação com uma variável auxiliar, onde é preenchida toda vez que se entra na função e esvaziada quando sai.<br>
+        <br>
+        <b>Parametros da função</b>
+        O compilador verifica se os tipos do parametros de uma função chamada são compativeis.
         <br>
         <b>if e while apresenta valor boolean</b><br>
         O compilador verifica se a expressão colocada dentro dos ifs e whiles tem tipo booleano.<br>

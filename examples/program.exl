@@ -2,14 +2,21 @@ ExL program
 
 number g;
 
-function soma(number a, number b): number
+function soma(number a, string b): number
 {
-    return a+b;
+    return a;
+}
+
+function s(number c, string d): number
+{
+    return c;
 }
 
 function main(number a): number
 {
     g = 5;
     number resultado;
+    g = soma(1,"123");
+    print(g);
     return 0;
 }

@@ -17,6 +17,10 @@ char* multi_idlist[10];
 bool has_return = false;
 char* type_return;
 
+int num_param = 1;
+char* func_verify;
+char* type_return_func;
+
 struct metaData {
     char* type;
     char* type_c;
@@ -50,9 +54,9 @@ int count_selection = 0;
 %token L_K R_K L_P R_P COLON SEMI COMMA
 %token PRINT READ
 
-%type<sValue> idlist decl decls body func_main funcs print_param print stmt stmts return assign op params read compare_op if while logic_op
+%type<sValue> idlist decl decls body func_main funcs func print_param print stmt stmts return assign op params read compare_op if while logic_op termlist
 %type<metValue> type result_type
-%type<metPaFValue> param term expr 
+%type<metPaFValue> param term expr func_call
 %start prog
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
@@ -76,13 +80,25 @@ body : func_main { $$ = $1; }
     ;
 
 decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
-    |	decl SEMI decls					       {$$ = concate(3, $1, "; \n", $3); 
+    |	decls SEMI decl					       {$$ = concate(3, $1, "; \n", $3); 
     free($3);
     } 
     ;
 
+funcs : func {$$ = $1;}
+    | funcs func {$$ = concate(2, $1, $2);}
+;
 
-funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params R_P COLON result_type {
+func : FUNCTION ID {
+    push_stack(&SCOPE_STACK, $2);
+    symbol* symbol = search($2, 0);
+    if(symbol != NULL){
+        yyerror("NOME DA FUNCAO JA ESTA SENDO USADO!");
+        exit(0);
+    }
+} L_P params R_P COLON result_type {
+    insert_symbol($2, $8->type, num_param);
+    num_param = 1;
     type_return = $8->type;
 } L_K stmts R_K  {
     if(!has_return){
@@ -114,7 +130,14 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P CO
 }
     ;
 
-func_call : ID L_P termlist R_P               {}
+func_call : ID {func_verify = $1;} L_P termlist R_P               {
+    char *temp = concate(4, $1, " ( ", $4, " ) ");
+
+    struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+    metadata->id = temp;
+    metadata->type = type_return_func;
+    $$ = metadata;
+}
 
 stmts : stmt SEMI    				        {
     //$$ = concate(3, "\t", $1, "  \n"); free($1);
@@ -143,7 +166,7 @@ decl : 	type idlist {
             if(idlist_quantity == 0){
                 char var_scope[MAXSIZE_STRING];
                 sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[idlist_quantity]);
-                if(!insert_symbol(var_scope, $1->type)) {
+                if(!insert_symbol(var_scope, $1->type, 0)) {
                     char msg_erro[255];
                     sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO! (escopo: %s)", multi_idlist[idlist_quantity], top_stack(&SCOPE_STACK));
                     yyerror(msg_erro);
@@ -157,7 +180,7 @@ decl : 	type idlist {
                 char var_scope[MAXSIZE_STRING];
                 for(int i = idlist_quantity; i >= 0; i--){
                     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), multi_idlist[i]);
-                    if(!insert_symbol(var_scope, $1->type)) {
+                    if(!insert_symbol(var_scope, $1->type, 0)) {
                         char msg_erro[255];
                         sprintf(msg_erro, "IDENTIFICADOR \'%s\' JA FOI DECLARADO NO ESCOPO! (escopo: %s)", multi_idlist[i], top_stack(&SCOPE_STACK));
                         yyerror(msg_erro);
@@ -183,19 +206,21 @@ params : param  {
         } else {
             char var_scope[MAXSIZE_STRING];
             sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
-            insert_symbol(var_scope, $1->type);
+            insert_symbol(var_scope, $1->type, num_param);
+            num_param++;
             $$ = concate(3, $1->type_c, "  ", $1->id);
         }
     }
-    |	param COMMA params			        {
+    |	 param COMMA params 		        {
     char var_scope[MAXSIZE_STRING];
     sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
-
-    if(!insert_symbol(var_scope, $1->type)) {
+    if(!insert_symbol(var_scope, $1->type, num_param)) {
         yyerror("NOME DE VARIAVEIS IGUAIS NOS PARAMETROS DA FUNCAO");
         exit(0);
     }
+    num_param++;
     $$ = concate(5, $1->type_c, "   ", $1->id, " , ", $3);
+    //$$ = concate(5, $1, ", ", $3->type_c, "  ", $3->id);
     }
 
     ;
@@ -274,7 +299,7 @@ return : RETURN expr {
     ;
 
 assign : ID ASSIGN expr   {
-    symbol* symbol = search($1);
+    symbol* symbol = search($1, 0);
     if(symbol == NULL){
         yyerror("VARIAVEL NAO EXISTE NO ESCOPO DO BLOCO");
         free($3);
@@ -312,7 +337,7 @@ expr :   term                               {$$ = $1;}
             exit(0);
         }
     }
-    |   func_call                             {}
+    |   func_call                             {$$ = $1;}
     |   expr compare_op term                  {
         // TODO realizar verificações
         char *temp = concate(3, $1->id, $2, $3->id);
@@ -353,12 +378,29 @@ logic_op:   AND                 {$$ = " && ";}
     |   OR                      {$$ = " || ";}
     ;
 
-termlist : term                 {}
-    |	term COMMA termlist     {}
+termlist : term                 {
+    symbol* temp = search(func_verify, num_param);
+    type_return_func = temp->type;
+    if(strcmp(temp->type, $1->type) != 0){
+        yyerror("TIPO DA CHAMADA DE FUNCAO INCOMPATIVEL!");
+        exit(0);
+    }
+    num_param--;
+    $$ = $1->id;
+    }
+    |	termlist COMMA term       {
+    symbol* temp = search(func_verify, num_param);
+    if(strcmp(temp->type, $3->type) != 0){
+        yyerror("TIPO DA CHAMADA DE FUNCAO INCOMPATIVEL!");
+        exit(0);
+    }   
+    num_param--;
+    $$ = concate(3, $1, ", ", $3->id);
+    }
     ;
 
 term :  ID {
-        symbol* symbol = search($1);
+        symbol* symbol = search($1, 0);
         if(symbol == NULL){
             yyerror("IDENTIFICADOR NAO EXISTE NO ESCOPO!");
             exit(0);
@@ -386,7 +428,7 @@ term :  ID {
         metadata->id = $1;
         metadata->type = "number";
         metadata->type_c = "double";
-        // printf("----> V_NUMBER:  %s\n", $1);
+        //printf("----> V_NUMBER:  %s\n", $1);
         $$ = metadata;
     }
     | V_STRING                      {
@@ -394,7 +436,7 @@ term :  ID {
         metadata->id = $1;
         metadata->type = "string";
         metadata->type_c = "char*";
-        // printf("----> V_STRING:  %s\n", metadata->id);
+        //printf("----> V_STRING:  %s\n", metadata->id);
         $$ = metadata;
     }
     ;
@@ -425,7 +467,7 @@ print : PRINT L_P print_param R_P      {
     ;
 
 read : READ L_P ID R_P                  {
-    symbol* symbol = search($3);
+    symbol* symbol = search($3, 0);
 
     if(symbol == NULL){
         yyerror("VARIAVEL NAO EXISTE NO ESCOPO DO BLOCO");
@@ -434,14 +476,11 @@ read : READ L_P ID R_P                  {
     } else {
         char* temp;
         if(strcmp(symbol->type, "number") == 0){
-            printf("READ: number\n");
             temp = concate(3, "scanf(\"%lf\", &", $3, " ); ");
         } 
         else if(strcmp(symbol->type, "string") == 0){
-            printf("READ: string\n");
             temp = concate(3, "scanf(\"%s\", &", $3, " ); ");
         } else if(strcmp(symbol->type, "char") == 0){
-            printf("READ: char\n");
             temp = concate(3, "scanf(\"%c\", &", $3, " ); ");
         } else {
             yyerror("BOOLEAN NAO EH COMPATIVEL COM READ");
@@ -453,7 +492,6 @@ read : READ L_P ID R_P                  {
     ;
 
 if : IF L_P expr {
-    printf("expr IF: %s\n", $3->id);
     if(strcmp($3->type, "boolean") != 0){
         yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
         free($3);
@@ -463,14 +501,12 @@ if : IF L_P expr {
     count_selection++;
     char var_scope[MAXSIZE_STRING];
     sprintf(var_scope, "%s_%s%d", top_stack(&SCOPE_STACK), "if", count_selection);
-    printf("id IF: %s\n", var_scope);
     push_stack(&SCOPE_STACK, var_scope);
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
     sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
     $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
     pop_stack(&SCOPE_STACK);
-    printf("top: %s\n", top_stack(&SCOPE_STACK));
     free($3);
     free($8);
 }
@@ -482,12 +518,10 @@ while : WHILE L_P expr {
         free($3);
         exit(0);
     }
-    printf("expr WHILE: %s\n", $3->id);
 } R_P L_K {
     count_selection++;
     char var_scope[MAXSIZE_STRING];
     sprintf(var_scope, "%s_%s%d", top_stack(&SCOPE_STACK), "while", count_selection);
-    printf("id WHILE: %s\n", var_scope);
     push_stack(&SCOPE_STACK, var_scope);
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
