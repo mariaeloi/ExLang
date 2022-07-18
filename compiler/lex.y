@@ -59,11 +59,15 @@ int count_selection = 0;
 
 prog : EXL ID {
             push_stack(&SCOPE_STACK, "0");} 
-        body {create_file($2, $4); free($4);}
+        body {create_file($2, $4); 
+        free($4);
+        }
     ;
 
 body : func_main { $$ = $1; }
-    | decls func_main {$$ = concate(2, $1, $2); free($1); free($2);}
+    | decls func_main {$$ = concate(2, $1, $2); 
+    free($1); free($2);
+    }
     | funcs func_main { }
     | decls funcs func_main {
         $$ = concate(3, $1, $2, $3);
@@ -71,8 +75,10 @@ body : func_main { $$ = $1; }
     } 
     ;
 
-decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
-    |	decl SEMI decls					       {$$ = concate(3, $1, ";\n", $3); free($3);} //
+decls : decl SEMI                              {$$ = concate(2, $1, ";  ");}
+    |	decl SEMI decls					       {$$ = concate(3, $1, ";  ", $3); 
+    free($3);
+    } 
     ;
 
 
@@ -115,12 +121,13 @@ stmts : stmt SEMI    				        {
     }
 	|	stmt SEMI stmts		    		    {
 
-        $$ = concate(4, "\t", $1, "  \n", $3); free($1); free($3);
+        $$ = concate(4, "\t", $1, "  \n", $3); 
+        free($1); free($3);
         //$$ = concate(2, $1, $3);
         }
     ;
 
-stmt :                                      {}
+stmt :                                      {$$ = " \n";}
     |   return 								{$$ = $1;}
     |   decl								{$$ = $1;}
     |   assign								{$$ = $1;}
@@ -171,7 +178,7 @@ decl : 	type idlist {
 
 params : param  {
         if($1->id == "  "){
-            $$ = "  ";
+            $$ = " \n";
         } else {
             char var_scope[MAXSIZE_STRING];
             sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
@@ -259,6 +266,7 @@ return : RETURN expr {
     if(strcmp($2->type, type_return) == 0){
         has_return = true;
     }
+
     $$ = concate(3, "return ", $2->id, " ;  ");
     free($2);
 }
@@ -409,8 +417,9 @@ print_param : expr  {
     ;
 
 print : PRINT L_P print_param R_P      {
-    $$ = concate(3, "printf(", $3, " ); ");
-    free($3);
+    $$ = concate(3, "printf(", $3, " );\n");
+    //$$ = "123";
+    //free($3);
     }
     ;
 
@@ -444,12 +453,12 @@ read : READ L_P ID_read R_P                  {
     ;
 
 if : IF L_P expr {
+    printf("expr IF: %s\n", $3->id);
     if(strcmp($3->type, "boolean") != 0){
         yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
         free($3);
         exit(0);
     }
-    printf("expr IF: %s\n", $3->id);
 } R_P L_K {
     count_selection++;
     char var_scope[MAXSIZE_STRING];
@@ -459,8 +468,8 @@ if : IF L_P expr {
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
     sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
-    $$ = "123";
-    //$$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
+    //$$ = "123";
+    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
     pop_stack(&SCOPE_STACK);
     printf("top: %s\n", top_stack(&SCOPE_STACK));
     free($3);

@@ -35,7 +35,7 @@ char* concate(int quantity, ...) {
 
     va_end(elements);
 
-    char* result = malloc(sizeof(char) * result_length);
+    char* result = malloc(sizeof *result +(sizeof(char) * result_length));
 
     va_start(elements, quantity);
     int delimiter = 0;

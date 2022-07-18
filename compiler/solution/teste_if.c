@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <math.h>
 
-double main(  )
+double main (  
+)
 {
-	double  numero;
-	scanf("%lf", &numero ) ;
-	if (!(numero > 0))
+	double  a ;    
+	scanf("%lf", &a );   
+	if (!(a > 0)) goto main_if1_skip;
 	{
-	printf("%f", numero ) ;
+printf("%f" , a );
 	}
-	;
-	return 1.20;
-}
+	main_if1_skip:
+  
+return 0 ;  }
