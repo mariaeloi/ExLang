@@ -75,8 +75,8 @@ body : func_main { $$ = $1; }
     } 
     ;
 
-decls : decl SEMI                              {$$ = concate(2, $1, ";  ");}
-    |	decl SEMI decls					       {$$ = concate(3, $1, ";  ", $3); 
+decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
+    |	decl SEMI decls					       {$$ = concate(3, $1, "; \n", $3); 
     free($3);
     } 
     ;
@@ -92,6 +92,7 @@ funcs : FUNCTION ID {push_stack(&SCOPE_STACK, $2);} L_P params R_P COLON result_
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
+    $$ = concate(8, $8->type_c,"  ", $2, " ( ", $5, ")\n{\n", $11, "\n}\n");
 }
     ;
 
@@ -107,7 +108,7 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P CO
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
-    $$ = concate(6, "double main", " ( ", $5, ")\n{\n", $11, "}\n");
+    $$ = concate(6, "double main", " ( ", $5, ")\n{\n", $11, "\n}\n");
     free($5);
     free($11);
 }
@@ -178,7 +179,7 @@ decl : 	type idlist {
 
 params : param  {
         if($1->id == "  "){
-            $$ = " \n";
+            $$ = "   ";
         } else {
             char var_scope[MAXSIZE_STRING];
             sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
