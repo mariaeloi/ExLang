@@ -39,7 +39,7 @@ int count_selection = 0;
     struct metaDataPaF* metPaFValue;
 };
 
-%token<sValue> ID ID_read V_STRING V_BOOLEAN V_NUMBER V_CHAR
+%token<sValue> ID V_STRING V_BOOLEAN V_NUMBER V_CHAR
 %token CONST VOID FUNCTION MAIN
 %token AND OR
 %token NUMBER STRING CHAR BOOLEAN
@@ -424,9 +424,8 @@ print : PRINT L_P print_param R_P      {
     }
     ;
 
-read : READ L_P ID_read R_P                  {
-    char* t = strtok($3, "&");
-    symbol* symbol = search(t);
+read : READ L_P ID R_P                  {
+    symbol* symbol = search($3);
 
     if(symbol == NULL){
         yyerror("VARIAVEL NAO EXISTE NO ESCOPO DO BLOCO");
@@ -436,14 +435,14 @@ read : READ L_P ID_read R_P                  {
         char* temp;
         if(strcmp(symbol->type, "number") == 0){
             printf("READ: number\n");
-            temp = concate(3, "scanf(\"%lf\", ", $3, " ); ");
+            temp = concate(3, "scanf(\"%lf\", &", $3, " ); ");
         } 
         else if(strcmp(symbol->type, "string") == 0){
             printf("READ: string\n");
-            temp = concate(3, "scanf(\"%s\", ", $3, " ); ");
+            temp = concate(3, "scanf(\"%s\", &", $3, " ); ");
         } else if(strcmp(symbol->type, "char") == 0){
             printf("READ: char\n");
-            temp = concate(3, "scanf(\"%c\", ", $3, " ); ");
+            temp = concate(3, "scanf(\"%c\", &", $3, " ); ");
         } else {
             yyerror("BOOLEAN NAO EH COMPATIVEL COM READ");
             exit(0);
