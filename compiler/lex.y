@@ -468,7 +468,6 @@ if : IF L_P expr {
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
     sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
-    //$$ = "123";
     $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
     pop_stack(&SCOPE_STACK);
     printf("top: %s\n", top_stack(&SCOPE_STACK));

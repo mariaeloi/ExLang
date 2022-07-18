@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Exl</title>
+</head>
+<body>
+    <h1>Documentação Exl</h1>
+    <p>
+        Este documento apresenta todas as características da linguagem desenvolvida, Exl,
+        demonstrando todas as etapas de implementação feitas no compilador.
+    </p>
+    <p>
+        O processo de desenvolvimento do compilador foi dividido em três etapas fundamentais:
+        <ul>
+            <li><a href="#lexico">Desenvolvimento do analisador léxico</a></li>
+            <li>Desenvolvimento do analisador sintático</li>
+            <li>Desenvolvimento do analisador semântico</li>
+        </ul>
+        Cada etapa do desenvolvimento complementa um pouco cada etapa anterior, começando pela identificação dos elementos na gramática, análise da estrutura onde são colocadas e por fim, se os dados apresentados na estrutura tem propriedade/sentido.
+    </p>
+    <hr>
+
+    <h2 id="lexico">Analisador Léxico</h2>
+    <p>
+        O analisador léxico transforma o código-fonte em tokens da linguagem. Essa transformação faz uso de expressões regulares, que por sua vez, identificam os padrões presentes no código-fonte da linguagem e os transformam nos seus respectivos lexemas, onde cada lexema tem um token associado.
+        <br><br>
+
+        No processo de identificação dos tokens, as seguintes palavras chaves são reservadas:
+        <ul>
+            <li>do</li>
+            <li>while</li>
+            <li>for</li>
+            <li>if</li>
+            <li>else</li>
+            <li>elsif</li>
+            <li>return</li>
+            <li>main</li>
+            <li>string</li>
+            <li>number</li>
+            <li>char</li>
+            <li>boolean</li>
+            <li>void</li>
+            <li>const</li>
+            <li>function</li>
+            <li>print</li>
+            <li>read</li>
+            <li>Exl</li>
+            <li>true</li>
+            <li>flase</li>
+        </ul>
+        A identificação de identificadores, tanto de funções como de variáveis, segue a regra de restrição para serem compreendidos: <i>Deve começar com uma letra minúscula.</i>
+        <br>
+        Com relação aos literais da lingaugem, temos:
+        <ul>
+            <li>Literais de String: são representados por qualquer cadeia de caracteres que estejam entre aspas duplas.</li>
+            <li>Literais de Char: são representados por um único elemento entre aspas simples.</li>
+            <li>Literais de Number: são cadeias de números, tanto decimal como não decimal.</li>
+        </ul>
+        <br>
+        Os demais tokens da linguagem, com apenas um lexema associado são:
+        <ul>
+            <li>{</li>
+            <li>}</li>
+            <li>(</li>
+            <li>)</li>
+            <li>;</li>
+            <li>,</li>
+            <li>=</li>
+            <li>&&</li>
+            <li>||</li>
+            <li>+</li>
+            <li>-</li>
+            <li>/</li>
+            <li>*</li>
+            <li>%</li>
+            <li>**</li>
+            <li>!=</li>
+            <li>==</li>
+            <li>>=</li>
+            <li><=</li>
+            <li>></li>
+            <li><</li>
+            <li>:</li> 
+        </ul>
+        <b>Qualquer outro caractere fora dos apresentados não será reconhecido pelo compilador.</b>
+    </p>
+    <hr>
+
+    <h2 id="sintatico">Analisador Sintático</h2>
+    <p>
+        A gramática da linguagem tem o seguinte formato:
+        <ul>
+            <li><b>prog</b> : EXL ID body</li>
+            <li><b>body</b> : func_main | decls func_main | funcs func_main | decls funcs func_main</li>
+            <li><b>decls</b> : decl SEMI | decl SEMI decls</li>
+            <li><b>funcs</b> : FUNCTION ID L_P params R_P COLON result_type L_K stmts R_K </li>
+            <li><b>func_main</b> : FUNCTION MAIN L_P params R_P COLON NUMBER L_K stmts R_K</li>
+            <li><b>func_call</b> : ID L_P termlist R_P</li>
+            <li><b>stmts</b> : stmt SEMI | stmt SEMI stmts</li>
+            <li><b>stmt</b> : return | decl | assign | print | read | if | while</li>
+            <li><b>decl</b> : type idlist</li>
+            <li><b>params</b> : param | param COMMA params</li>
+            <li><b>param</b> :  | type ID</li>
+            <li><b>result_type</b> : type | VOID</li>
+            <li><b>type</b> : NUMBER | STRING | CHAR | BOOLEAN</li>
+            <li><b>idlist</b> : ID | ID COMMA idlist</li>
+            <li><b>return</b> : RETURN expr</li>
+            <li><b>assign</b> : ID ASSIGN expr</li>
+            <li><b>expr</b> : term | expr op term | func_call | expr compare_op term | expr logic_op term</li>
+            <li><b>op</b> : PLUS | MINUS | DIVIDE | MULTY | PERCENT | EXP</li>
+            <li><b>compare_op</b> : EQ | NE | LE | LT | GE | GT</li>
+            <li><b>logic_op</b> : AND | OR </li>
+            <li><b>termlist</b> : term | term COMMA termlist</li>
+            <li><b>term</b> : ID | V_NUMBER | V_STRING</li>
+            <li><b>print_param</b> : expr</li>
+            <li><b>print</b> : PRINT L_P print_param R_P</li>
+            <li><b>read</b> : READ L_P ID_read R_P</li>
+            <li><b>if</b> : IF L_P expr R_P L_K stmts R_K</li>
+            <li><b>while</b> : WHILE L_P expr R_P L_K stmts R_K</li>
+        </ul>
+        <h4>Formato do programa</h4>
+        O programa segue uma estrutura de implementação única, onde em primeiro lugar é feita a declaração do nome do programa com "Exl 'nome do programa'", depois são feitas as declarações de variáveis globais, depois são criar todas as funçõeos e posteriormente, declarada a função main.
+        <br>
+        Segue o seguinte modelo:<br>
+        <code>
+            ExL name_program<br>
+                number a;<br>
+                funtion f1(): void{<br>
+                    a = 2;<br>
+                }<br>
+                function main(): number {<br>
+                    return 0;<br>
+                }
+        </code>
+        
+
+
+        <h4>Tipos primitivos</h4>
+        O compilador suporta os seguintes tipos primitivos:
+        <ul>
+            <li>number</li>
+            <li>string</li>
+            <li>char</li>
+            <li>boolean</li>
+        </ul>
+
+        <h4>Declaração de variáveis</h4>
+        A declaração de variáveis pode ser feita de forma aninhada ou não.
+        <ul>
+            <li><b>Declaração não aninhada:</b> number a;</li>
+            <li><b>Declaração aninhada:</b> number a, b, c;</li>
+        </ul>
+
+        <h4>Leitura e escrita</h4>
+        O compilador é capaz de reconhecer operações de leitura e escrita. <br>
+        A palavra reservada para a leitura é <b>read</b>. É preciso informar qual variável receberá o read, e deverá ser seguida de '&'. Se utiliza da seguinte forma:<br>
+        <code>read(&a);</code><br>
+        A palavra reservada para escrita é <b>print</b>. O print é utilizado para escrever um valor por vez, seja de variável ou string. Se utiliza da seguinte forma:<br>
+        <code>print(a);</code>
+
+        <h4>Estrutura de repetição</h4>
+        O compilador é capaz de reconhecer uma estrutura de repetição, com a palavra reservada <b>while</b>. Se utiliza da seguinte forma:<br>
+        <code>while(a > 0) { <br> //program <br> }</code>
+
+        <h4>Estrutura de condição</h4>
+        O compilador é capaz de reconhecer uma estrutura de condição, com a palavra reservada <b>if</b>. Se utiliza da seguinte forma:<br>
+        <code>if(a > 0) { <br> //program <br> }</code>
+
+    </p>
+    <hr>
+
+    <h2 id="semantico">Analisador Semântico</h2>
+    <p>
+        <b>Variável existe</b><br>
+        O compilador verifica se a variável que foi chamada existe no escopo do bloco onde está.<br>
+        É feita uma busca nos escopos anteriores, utilizado do sistema de escopo estático, verificando se a variável foi declarada em um escopo visível do bloco.<br>
+        <br>
+        <b>Variável duplicada</b><br>
+        O compilador verifica se a variável que foi declarada já foi declarada no bloco onde está.<br>
+        É feito uma verificação, se a variável 'nome_escopo'.'nome_variavel' está na tabela de símbolos.<br>
+        <br>
+        <b>Tipo de retorno da função</b><br>
+        O compilador verifica se o retorno da função é o tipo de retorno esperado.<br>
+        É feito uma verificação com uma variável auxiliar, onde é preenchida toda vez que se entra na função e esvaziada quando sai.<br>
+        <br>
+        <b>if e while apresenta valor boolean</b><br>
+        O compilador verifica se a expressão colocada dentro dos ifs e whiles tem tipo booleano.<br>
+        <br>
+        <b>Compatibilidade de tipos</b><br>
+        O compilador verifica se os tipos dos termos dentro de uma expressão são compatíveis uns com os outros.<br>
+        <br>
+        <b>Atribuição de valor</b><br>
+        O compilador verifica se a atribuição de valor para uma dada variável é compatível com seu tipo.<br>
+
+    </p>
+</body>
+</html>
