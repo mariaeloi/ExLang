@@ -1,21 +1,13 @@
 #include <stdio.h>
 #include <math.h>
 
-double  g ;  ;
-double  soma ( double   a , char*  b)
+char*  g ;  ;
+char*  soma ( char*   a , double   b , char*  c)
 {
 return a ;  
 }
-double  s ( double   c , char*  d)
-{
-return c ;  
-}
 double main ( double  a)
 {
-	g = 5;    
-	double  resultado ;    
-	g = soma ( 1, "123" ) ;    
-	printf("%f" , g );
-  
+	g = soma ( "1", 2, "123" ) ;    
 return 0 ;  
 }

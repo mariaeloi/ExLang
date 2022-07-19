@@ -1,22 +1,15 @@
 ExL program
 
-number g;
+string g;
 
-function soma(number a, string b): number
+function soma(string a, number b, string c): string
 {
     return a;
 }
 
-function s(number c, string d): number
-{
-    return c;
-}
-
 function main(number a): number
 {
-    g = 5;
-    number resultado;
-    g = soma(1,"123");
-    print(g);
+
+    g = soma("1", 2, "123");
     return 0;
 }

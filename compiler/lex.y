@@ -379,7 +379,10 @@ logic_op:   AND                 {$$ = " && ";}
     ;
 
 termlist : term                 {
+    symbol* t = search(func_verify, 0);
+    num_param = t->position - 1;
     symbol* temp = search(func_verify, num_param);
+
     type_return_func = temp->type;
     if(strcmp(temp->type, $1->type) != 0){
         yyerror("TIPO DA CHAMADA DE FUNCAO INCOMPATIVEL!");
