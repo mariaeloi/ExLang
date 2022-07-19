@@ -1,0 +1,10 @@
+ExL boolean_op
+
+function main(): number
+{
+    if(true >= false) {
+        print("maior");
+    };
+
+    return 0;
+}

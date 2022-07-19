@@ -1,0 +1,18 @@
+ExL var_duplicada_ok
+
+number a, b;
+
+function soma(number a, number x): number
+{
+    number b;
+    b = 1;
+    return a + x;
+}
+
+function main(number b): number
+{
+    a = 2;
+    b = 3;
+    print(soma(a, b));
+    return 0;
+}

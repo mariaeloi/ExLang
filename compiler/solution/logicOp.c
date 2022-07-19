@@ -7,9 +7,9 @@ double main()
 {
 	if (!(true || false)) goto if1_skip;
 
-	printf("%s", "ok");
+	printf("%s\n", "ok");
 
-	if1_skip:
+	if1_skip:;
 
 	return 0;
 }

@@ -511,11 +511,11 @@ print_param : expr  {
     char* temp;
     
     if(strcmp($1->type, "number") == 0){
-        temp = concate(2, "\"%f\", ", $1->id);
+        temp = concate(2, "\"%f\\n\", ", $1->id);
     } else if(strcmp($1->type, "string") == 0){
-        temp = concate(2, "\"%s\", ", $1->id);
+        temp = concate(2, "\"%s\\n\", ", $1->id);
     } else if(strcmp($1->type, "char") == 0){
-        temp = concate(2, "\"%c\", ", $1->id);
+        temp = concate(2, "\"%c\\n\", ", $1->id);
     } else {
         yyerror("TIPO DE ELEMENTO NAO ACEITO NO PRINT");
         exit(0);

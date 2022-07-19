@@ -1,4 +1,4 @@
-ExL erroRetorno
+ExL erro_retorno
 
 function teste(char caracter): boolean
 {

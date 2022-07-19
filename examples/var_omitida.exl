@@ -1,0 +1,7 @@
+ExL var_omitida
+
+function main(): number
+{
+    var_nao_declarda = "testando";
+    return 0;
+}

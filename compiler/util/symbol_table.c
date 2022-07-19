@@ -58,40 +58,41 @@ bool insert_symbol(char* name, char* type, int position_) {
 }
 
 symbol* search(char* name, int position_){
-    symbol* symbol_curr;
-    struct Stack copy = SCOPE_STACK;
-    for(int i=size_stack(&SCOPE_STACK); i >= 0; i--){
-        symbol_curr = symbol_head;
-        char var_scope[MAXSIZE_STRING];
-        sprintf(var_scope, "%s.%s", top_stack(&copy), name);
-        if(position_ == 0){
-            while(true) {
-                char * temp = symbol_curr->name;
-                if(strcmp(temp, var_scope) == 0){
-                    return symbol_curr;
-                } else if (strcmp(symbol_curr->name, name) == 0){
-                    return symbol_curr;
+    if(symbol_head != NULL) {
+        symbol* symbol_curr;
+        struct Stack copy = SCOPE_STACK;
+        for(int i=size_stack(&SCOPE_STACK); i >= 0; i--){
+            symbol_curr = symbol_head;
+            char var_scope[MAXSIZE_STRING];
+            sprintf(var_scope, "%s.%s", top_stack(&copy), name);
+            if(position_ == 0){
+                while(true) {
+                    char * temp = symbol_curr->name;
+                    if(strcmp(temp, var_scope) == 0){
+                        return symbol_curr;
+                    } else if (strcmp(symbol_curr->name, name) == 0){
+                        return symbol_curr;
+                    }
+                    if(symbol_curr->next == NULL){
+                        break;
+                    }
+                    symbol_curr = symbol_curr->next;
                 }
-                if(symbol_curr->next == NULL){
-                    break;
+            } else {
+                while(true){
+                    char* temp = strdup(symbol_curr->name);
+                    if(strcmp(name, strtok(temp, ".")) == 0 && symbol_curr->position == position_){
+                        return symbol_curr;
+                    }
+                    if(symbol_curr->next == NULL){
+                        break;
+                    }
+                    symbol_curr = symbol_curr->next;
                 }
-                symbol_curr = symbol_curr->next;
+                
             }
-        } else {
-            while(true){
-                char* temp = strdup(symbol_curr->name);
-                if(strcmp(name, strtok(temp, ".")) == 0 && symbol_curr->position == position_){
-                    return symbol_curr;
-                }
-                if(symbol_curr->next == NULL){
-                    break;
-                }
-                symbol_curr = symbol_curr->next;
-            }
-            
+            pop_stack(&copy);
         }
-        pop_stack(&copy);
-        
     }
     
     return NULL;

@@ -33,9 +33,13 @@ function main(): number
         integrar(a);
     };
 
+    print("0 <= valor <= 25:");
     print(i_1);
+    print("26 <= valor <= 50:");
     print(i_2);
+    print("51 <= valor <= 75:");
     print(i_3);
+    print("76 <= valor <= 100:");
     print(i_4);
 
     return 0;

@@ -1,0 +1,10 @@
+ExL string_op
+
+function main(): number
+{
+    if("Nome" < "Nome2") {
+        print("maior");
+    };
+
+    return 0;
+}

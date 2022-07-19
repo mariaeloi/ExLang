@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
+#include <stdbool.h>
 
-double main ( )
+double main()
 {
 	double numero;
 	numero = 1;
@@ -11,9 +13,9 @@ double main ( )
 	scanf("%lf", &numero);
 	if (!(numero < 0)) goto if1_skip;
 
-	printf("%f", numero);
+	printf("%f\n", numero);
 
-	if1_skip:
+	if1_skip:;
 
 	goto while2;
 	while2_skip:

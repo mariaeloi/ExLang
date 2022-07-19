@@ -48,9 +48,13 @@ double main()
 	goto while5;
 	while5_skip:
 
-	printf("%f", i_1);
-	printf("%f", i_2);
-	printf("%f", i_3);
-	printf("%f", i_4);
+	printf("%s\n", "0 <= valor <= 25:");
+	printf("%f\n", i_1);
+	printf("%s\n", "26 <= valor <= 50:");
+	printf("%f\n", i_2);
+	printf("%s\n", "51 <= valor <= 75:");
+	printf("%f\n", i_3);
+	printf("%s\n", "76 <= valor <= 100:");
+	printf("%f\n", i_4);
 	return 0;
 }

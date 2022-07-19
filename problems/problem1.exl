@@ -1,10 +1,8 @@
 ExL problema1
 
-number x, y, c;
-
 function main(): number
 {
-
+    number x, y, c;
     x = 3.141234123;
     y = 1.2445345;
     c = 1;

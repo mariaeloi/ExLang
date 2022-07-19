@@ -1,4 +1,4 @@
-ExL program
+ExL tipo_incompativel_param
 
 string g;
 
@@ -9,7 +9,6 @@ function soma(string a, number b, boolean c): string
 
 function main(number a): number
 {
-
     g = soma("1", 2, "123");
     return 0;
 }
