@@ -80,7 +80,7 @@ body : func_main { $$ = $1; }
     ;
 
 decls : decl SEMI                              {$$ = concate(2, $1, ";\n");}
-    |	decls SEMI decl					       {$$ = concate(3, $1, "; \n", $3); 
+    |	decls SEMI decl					       {$$ = concate(3, $1, ";\n", $3); 
     free($3);
     } 
     ;
@@ -108,7 +108,7 @@ func : FUNCTION ID {
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
-    $$ = concate(8, $8->type_c,"  ", $2, " ( ", $5, ")\n{\n", $11, "\n}\n");
+    $$ = concate(8, $8->type_c, " ", $2, "(", $5, ")\n{\n", $11, "\n}\n");
 }
     ;
 
@@ -124,14 +124,14 @@ func_main : FUNCTION MAIN {push_stack(&SCOPE_STACK, "main"); } L_P params R_P CO
         has_return = false;
     }
     pop_stack(&SCOPE_STACK);
-    $$ = concate(6, "double main", " ( ", $5, ")\n{\n", $11, "\n}\n");
+    $$ = concate(6, "double main", "(", $5, ")\n{\n", $11, "\n}\n");
     free($5);
     free($11);
 }
     ;
 
 func_call : ID {func_verify = $1;} L_P termlist R_P               {
-    char *temp = concate(4, $1, " ( ", $4, " ) ");
+    char *temp = concate(4, $1, "(", $4, ")");
 
     struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
     metadata->id = temp;
@@ -140,20 +140,20 @@ func_call : ID {func_verify = $1;} L_P termlist R_P               {
 }
 
 stmts : stmt SEMI    				        {
-    //$$ = concate(3, "\t", $1, "  \n"); free($1);
-    $$ = $1;
+    $$ = concate(2, "\t", $1); free($1);
+    // $$ = $1;
     }
 	|	stmt SEMI stmts		    		    {
 
-        $$ = concate(4, "\t", $1, "  \n", $3); 
+        $$ = concate(4, "\t", $1, "\n", $3); 
         free($1); free($3);
         //$$ = concate(2, $1, $3);
         }
     ;
 
-stmt :                                      {$$ = " \n";}
+stmt :                                      {$$ = "\n";}
     |   return 								{$$ = $1;}
-    |   decl								{$$ = $1;}
+    |   decl								{$$ = concate(2, $1, ";");}
     |   assign								{$$ = $1;}
     |   print                               {$$ = $1;}
     |   read                                {$$ = $1;}
@@ -193,7 +193,7 @@ decl : 	type idlist {
                 }
                 idlist_quantity = -1;
             }
-            concate_return = concate(4, $1->type_c, "  ", $2, " ;  ");
+            concate_return = concate(3, $1->type_c, " ", $2);
             $$ = concate_return;
             free($1);
             free($2);
@@ -202,13 +202,13 @@ decl : 	type idlist {
 
 params : param  {
         if($1->id == "  "){
-            $$ = "   ";
+            $$ = "";
         } else {
             char var_scope[MAXSIZE_STRING];
             sprintf(var_scope, "%s.%s", top_stack(&SCOPE_STACK), $1->id);
             insert_symbol(var_scope, $1->type, num_param);
             num_param++;
-            $$ = concate(3, $1->type_c, "  ", $1->id);
+            $$ = concate(3, $1->type_c, " ", $1->id);
         }
     }
     |	 param COMMA params 		        {
@@ -219,7 +219,7 @@ params : param  {
         exit(0);
     }
     num_param++;
-    $$ = concate(5, $1->type_c, "   ", $1->id, " , ", $3);
+    $$ = concate(5, $1->type_c, " ", $1->id, ", ", $3);
     //$$ = concate(5, $1, ", ", $3->type_c, "  ", $3->id);
     }
 
@@ -279,7 +279,7 @@ idlist : ID                                 {
     |   ID COMMA idlist                     { 
     idlist_quantity++;
     multi_idlist[idlist_quantity] = $1;
-    $$ = concate(3, $1, " , ", $3);
+    $$ = concate(3, $1, ", ", $3);
     }
     ;
 
@@ -293,7 +293,7 @@ return : RETURN expr {
         has_return = true;
     }
 
-    $$ = concate(3, "return ", $2->id, " ;  ");
+    $$ = concate(3, "return ", $2->id, ";");
     free($2);
 }
     ;
@@ -309,7 +309,7 @@ assign : ID ASSIGN expr   {
         free($3);
         exit(0);
     }
-    $$ = concate(4, $1, " = ", $3->id, ";  ");
+    $$ = concate(4, $1, " = ", $3->id, ";");
     free($3);
 }
     ;
@@ -319,7 +319,7 @@ expr :   term                               {$$ = $1;}
         if(strcmp($1->type, $3->type) == 0){
             char* temp;
             if($2 == "**"){
-                temp = concate(5, "pow(",$1->id, ", ", $3->id, " )  ");
+                temp = concate(5, "pow(",$1->id, ", ", $3->id, ")");
             } else {
                 temp = concate(3, $1->id, $2, $3->id);
             }
@@ -448,11 +448,11 @@ print_param : expr  {
     char* temp;
     
     if(strcmp($1->type, "number") == 0){
-        temp = concate(2, "\"%f\" , ", $1->id);
+        temp = concate(2, "\"%f\", ", $1->id);
     } else if(strcmp($1->type, "string") == 0){
-        temp = concate(2, "\"%s\" , ", $1->id);
+        temp = concate(2, "\"%s\", ", $1->id);
     } else if(strcmp($1->type, "char") == 0){
-        temp = concate(2, "\"%c\" , ", $1->id);
+        temp = concate(2, "\"%c\", ", $1->id);
     } else {
         yyerror("TIPO DE ELEMENTO NAO ACEITO NO PRINT");
         exit(0);
@@ -463,7 +463,7 @@ print_param : expr  {
     ;
 
 print : PRINT L_P print_param R_P      {
-    $$ = concate(3, "printf(", $3, " );\n");
+    $$ = concate(3, "printf(", $3, ");");
     //$$ = "123";
     //free($3);
     }
@@ -479,12 +479,12 @@ read : READ L_P ID R_P                  {
     } else {
         char* temp;
         if(strcmp(symbol->type, "number") == 0){
-            temp = concate(3, "scanf(\"%lf\", &", $3, " ); ");
+            temp = concate(3, "scanf(\"%lf\", &", $3, ");");
         } 
         else if(strcmp(symbol->type, "string") == 0){
-            temp = concate(3, "scanf(\"%s\", &", $3, " ); ");
+            temp = concate(3, "scanf(\"%s\", &", $3, ");");
         } else if(strcmp(symbol->type, "char") == 0){
-            temp = concate(3, "scanf(\"%c\", &", $3, " ); ");
+            temp = concate(3, "scanf(\"%c\", &", $3, ");");
         } else {
             yyerror("BOOLEAN NAO EH COMPATIVEL COM READ");
             exit(0);

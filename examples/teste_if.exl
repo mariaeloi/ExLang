@@ -3,7 +3,7 @@ ExL teste_if
 function main(): number
 {
     number a;
-    read(&a);
+    read(a);
     if(a > 0) {
         print(a);
     }; 

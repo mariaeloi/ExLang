@@ -2,7 +2,7 @@ ExL program
 
 string g;
 
-function soma(string a, number b, string c): string
+function soma(string a, number b, boolean c): string
 {
     return a;
 }
