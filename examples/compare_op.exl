@@ -1,0 +1,10 @@
+ExL compareOp
+
+function main(): number
+{
+    if(true != false) {
+        print("ok");
+    };
+
+    return 0;
+}

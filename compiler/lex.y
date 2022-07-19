@@ -319,7 +319,7 @@ expr :   term                               {$$ = $1;}
         if(strcmp($1->type, $3->type) == 0){
             char* temp;
             if($2 == "**"){
-                temp = concate(5, "pow(",$1->id, ", ", $3->id, ")");
+                temp = concate(5, "pow(", $1->id, ", ", $3->id, ")");
             } else {
                 temp = concate(3, $1->id, $2, $3->id);
             }
@@ -339,16 +339,53 @@ expr :   term                               {$$ = $1;}
     }
     |   func_call                             {$$ = $1;}
     |   expr compare_op term                  {
-        // TODO realizar verificações
-        char *temp = concate(3, $1->id, $2, $3->id);
-        struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
-        metadata->id = temp;
-        metadata->type = "boolean";
-        metadata->type_c = "bool";
-        $$ = metadata;
+        if(strcmp($1->type, $3->type) == 0){
+            char* temp;
+            if(strcmp($1->type, "string") == 0) {
+                if($2 == " == " && (strcmp($1->type, "string") == 0)){
+                    temp = concate(5, "strcmp(", $1->id, ", ", $3->id, ") == 0");
+                } else if ($2 == " != " && (strcmp($1->type, "string") == 0)) {
+                    temp = concate(5, "strcmp(", $1->id, ", ", $3->id, ") != 0");
+                } else {
+                    char *msg = concate(2, "STRING NAO EH COMPATIVEL COM ", $2);
+                    yyerror(msg);
+                    free($1);
+                    free($3);
+                    exit(0);
+                }
+            } else if(strcmp($1->type, "boolean") == 0) {
+                if($2 == " == " || $2 == " != ") {
+                    temp = concate(3, $1->id, $2, $3->id);
+                } else {
+                    char *msg = concate(2, "BOOLEAN NAO EH COMPATIVEL COM ", $2);
+                    yyerror(msg);
+                    free($1);
+                    free($3);
+                    exit(0);
+                }
+            } else {
+                temp = concate(3, $1->id, $2, $3->id);
+            }
+            free($3);
+            struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+            metadata->id = temp;
+            metadata->type = "boolean";
+            metadata->type_c = "bool";
+            $$ = metadata;
+        } else {
+            yyerror("TERMOS NAO COMPATIVEIS!");
+            free($1);
+            free($3);
+            exit(0);
+        }
     }
     |   expr logic_op term                  {
-        // TODO realizar verificações
+        if((strcmp($1->type, "boolean") != 0) || (strcmp($3->type, "boolean") != 0)) {
+            yyerror("OPERADORES LOGICOS DEVEM SER USADOS APENAS COM EXPRESSOES BOOLEAN");
+            free($1);
+            free($3);
+            exit(0);
+        }
         char *temp = concate(3, $1->id, $2, $3->id);
         struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
         metadata->id = temp;
@@ -440,6 +477,20 @@ term :  ID {
         metadata->type = "string";
         metadata->type_c = "char*";
         //printf("----> V_STRING:  %s\n", metadata->id);
+        $$ = metadata;
+    }
+    | V_CHAR                      {
+        struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+        metadata->id = $1;
+        metadata->type = "char";
+        metadata->type_c = "char";
+        $$ = metadata;
+    }
+    | V_BOOLEAN                      {
+        struct metaDataPaF* metadata = (struct metaDataPaF*) malloc(sizeof(struct metaDataPaF));
+        metadata->id = $1;
+        metadata->type = "boolean";
+        metadata->type_c = "bool";
         $$ = metadata;
     }
     ;

@@ -17,6 +17,8 @@ void create_file(char* filename, char* program)  {
 
     fprintf(file_output, "%s\n", "#include <stdio.h>");
     fprintf(file_output, "%s\n", "#include <math.h>");
+    fprintf(file_output, "%s\n", "#include <string.h>");
+    fprintf(file_output, "%s\n", "#include <stdbool.h>");
     fprintf(file_output, "\n");
 
     fprintf(file_output, "%s", program);
