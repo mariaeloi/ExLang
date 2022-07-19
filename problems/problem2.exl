@@ -12,7 +12,7 @@ function main(): number
     i_4 = 0;
 
     while(a >= 0){
-        read(&a);
+        read(a);
         
         if(a >= 0 && a <= 25){
             i_1 = i_1 + 1;

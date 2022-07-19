@@ -494,7 +494,7 @@ read : READ L_P ID R_P                  {
 }
     ;
 
-if : IF L_P expr {
+/* if : IF L_P expr {
     if(strcmp($3->type, "boolean") != 0){
         yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
         free($3);
@@ -503,7 +503,7 @@ if : IF L_P expr {
 } R_P L_K {
     count_selection++;
     char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "%s_%s%d", top_stack(&SCOPE_STACK), "if", count_selection);
+    sprintf(var_scope, "if%d", count_selection);
     push_stack(&SCOPE_STACK, var_scope);
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
@@ -524,7 +524,7 @@ while : WHILE L_P expr {
 } R_P L_K {
     count_selection++;
     char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "%s_%s%d", top_stack(&SCOPE_STACK), "while", count_selection);
+    sprintf(var_scope, "while%d", count_selection);
     push_stack(&SCOPE_STACK, var_scope);
 } stmts R_K {
     char var_skip[MAXSIZE_STRING];
@@ -533,6 +533,40 @@ while : WHILE L_P expr {
     pop_stack(&SCOPE_STACK);
     free($3);
     free($8);
+}
+    ; */
+
+if : IF L_P expr {
+    if(strcmp($3->type, "boolean") != 0){
+        yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
+        free($3);
+        exit(0);
+    }
+} R_P L_K stmts R_K {
+    char var_skip[MAXSIZE_STRING];
+    count_selection++;
+    sprintf(var_skip, "if%d_skip", count_selection);
+    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\n", $7, "\n\n\t", var_skip, ":\n");
+    free($3);
+    free($7);
+}
+    ;
+
+while : WHILE L_P expr {
+    if(strcmp($3->type, "boolean") != 0){
+        yyerror("A CONDICAO DE UM WHILE DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
+        free($3);
+        exit(0);
+    }
+} R_P L_K stmts R_K {
+    char var_scope[MAXSIZE_STRING];
+    char var_skip[MAXSIZE_STRING];
+    count_selection++;
+    sprintf(var_scope, "while%d", count_selection);
+    sprintf(var_skip, "while%d_skip", count_selection);
+    $$ = concate(12, var_scope, ":\n\tif (!(", $3->id, ")) goto ", var_skip, ";\n\n", $7, "\n\tgoto ", var_scope, ";\n\t", var_skip, ":\n");
+    free($3);
+    free($7);
 }
     ;
 
