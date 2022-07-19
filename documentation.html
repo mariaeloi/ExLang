@@ -100,7 +100,7 @@
             <li><b>func_main</b> : FUNCTION MAIN L_P params R_P COLON NUMBER L_K stmts R_K</li>
             <li><b>func_call</b> : ID L_P termlist R_P</li>
             <li><b>stmts</b> : stmt SEMI | stmt SEMI stmts</li>
-            <li><b>stmt</b> : return | decl | assign | print | read | if | while</li>
+            <li><b>stmt</b> : return | decl | assign | print | read | if | while | func_call</li>
             <li><b>decl</b> : type idlist</li>
             <li><b>params</b> : param | param COMMA params</li>
             <li><b>param</b> :  | type ID</li>
@@ -109,7 +109,8 @@
             <li><b>idlist</b> : ID | ID COMMA idlist</li>
             <li><b>return</b> : RETURN expr</li>
             <li><b>assign</b> : ID ASSIGN expr</li>
-            <li><b>expr</b> : term | expr op term | func_call | expr compare_op term | expr logic_op term</li>
+            <li><b>expr</b> : term | expr op term | func_call | expr compare_op term</li>
+            <li><b>expr_logic</b> : expr | expr logic_op expr_logic </li>
             <li><b>op</b> : PLUS | MINUS | DIVIDE | MULTY | PERCENT | EXP</li>
             <li><b>compare_op</b> : EQ | NE | LE | LT | GE | GT</li>
             <li><b>logic_op</b> : AND | OR </li>
@@ -118,8 +119,8 @@
             <li><b>print_param</b> : expr</li>
             <li><b>print</b> : PRINT L_P print_param R_P</li>
             <li><b>read</b> : READ L_P ID_read R_P</li>
-            <li><b>if</b> : IF L_P expr R_P L_K stmts R_K</li>
-            <li><b>while</b> : WHILE L_P expr R_P L_K stmts R_K</li>
+            <li><b>if</b> : IF L_P expr_logic R_P L_K stmts R_K</li>
+            <li><b>while</b> : WHILE L_P expr_logic R_P L_K stmts R_K</li>
         </ul>
         <h4>Formato do programa</h4>
         O programa segue uma estrutura de implementação única, onde em primeiro lugar é feita a declaração do nome do programa com "Exl 'nome do programa'", depois são feitas as declarações de variáveis globais, depois são criar todas as funçõeos e posteriormente, declarada a função main.

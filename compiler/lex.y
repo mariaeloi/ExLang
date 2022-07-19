@@ -56,7 +56,7 @@ int count_selection = 0;
 
 %type<sValue> idlist decl decls body func_main funcs func print_param print stmt stmts return assign op params read compare_op if while logic_op termlist
 %type<metValue> type result_type
-%type<metPaFValue> param term expr func_call
+%type<metPaFValue> param term expr func_call expr_logic
 %start prog
 
 %% /* Inicio da segunda seção, onde colocamos as regras BNF: % PERCENT ! : COLON ! / SLASH ! * ASTERISK */
@@ -99,6 +99,9 @@ func : FUNCTION ID {
 } L_P params R_P COLON result_type {
     insert_symbol($2, $8->type, num_param);
     num_param = 1;
+    if(strcmp($8->type, "void") == 0 ){
+        has_return = true;
+    }
     type_return = $8->type;
 } L_K stmts R_K  {
     if(!has_return){
@@ -159,6 +162,7 @@ stmt :                                      {$$ = "\n";}
     |   read                                {$$ = $1;}
     |   if                                  {$$ = $1;}
     |   while                               {$$ = $1;}
+    |   func_call                           {$$ = concate(2, $1->id, ";\n");}
     ;
 
 decl : 	type idlist {
@@ -379,7 +383,10 @@ expr :   term                               {$$ = $1;}
             exit(0);
         }
     }
-    |   expr logic_op term                  {
+    ;   
+
+expr_logic : expr   {$$ = $1;}
+        | expr logic_op expr_logic                  {
         if((strcmp($1->type, "boolean") != 0) || (strcmp($3->type, "boolean") != 0)) {
             yyerror("OPERADORES LOGICOS DEVEM SER USADOS APENAS COM EXPRESSOES BOOLEAN");
             free($1);
@@ -393,6 +400,7 @@ expr :   term                               {$$ = $1;}
         metadata->type_c = "bool";
         $$ = metadata;
     }
+    
     ;
 
 op :     PLUS                                   {$$ = " + ";}
@@ -587,7 +595,7 @@ while : WHILE L_P expr {
 }
     ; */
 
-if : IF L_P expr {
+if : IF L_P expr_logic {
     if(strcmp($3->type, "boolean") != 0){
         yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
         free($3);
@@ -597,13 +605,13 @@ if : IF L_P expr {
     char var_skip[MAXSIZE_STRING];
     count_selection++;
     sprintf(var_skip, "if%d_skip", count_selection);
-    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\n", $7, "\n\n\t", var_skip, ":\n");
+    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\n", $7, "\n\n\t", var_skip, ":;\n");
     free($3);
     free($7);
 }
     ;
 
-while : WHILE L_P expr {
+while : WHILE L_P expr_logic {
     if(strcmp($3->type, "boolean") != 0){
         yyerror("A CONDICAO DE UM WHILE DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
         free($3);
