@@ -199,5 +199,35 @@
         O compilador verifica se a atribuição de valor para uma dada variável é compatível com seu tipo.<br>
 
     </p>
+    <hr>
+
+    <h2>Instruções de uso</h2>
+    <p>
+        O projeto do compilador é composto por cinco arquivos ao total, presentes na pasta compiler:
+
+        <ul>
+            <li>lex.l</li>
+            <li>lex.y</li>
+            <li>\util\generator_c.c</li>
+            <li>\util\scope_stack.c</li>
+            <li>\util\symbol_table.c</li>
+        </ul>
+
+        Para utilizar o compilador é preciso executar três comandos (o terminal deve estar dentro da pasta compiler do projeto). Os comandos a serem executados são:
+
+        <ol>
+            <li>flex .\lex.l</li>
+            <li>bison .\lex.l</li>
+            <li>gcc .\lex.yy.c .\lex.tab.c</li>
+        </ol>
+
+        No momento que executar os três comandos em sequência, o arquivo binário <b>a.exe</b> gera gerado. Com ele pode-se compilar algum programa escrito na linguagem Exl. <br>
+        Para compilar utilizando o arquivo binário gerado, deve-se executar seguinte linha de comando:
+        <code>.\a.exe < <i>program.exl</i></code><br>
+
+        Ao finalizar o processo de compilação, um arquivo <i>c</i> será gerado contendo um código traduzido em C simplificado do arquivo <i>program.exl</i><br>
+        
+
+    </p>
 </body>
 </html>

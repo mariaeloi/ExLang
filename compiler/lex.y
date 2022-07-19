@@ -63,7 +63,8 @@ int count_selection = 0;
 
 prog : EXL ID {
             push_stack(&SCOPE_STACK, "0");} 
-        body {create_file($2, $4); 
+        body {
+        create_file($2, $4); 
         free($4);
         }
     ;
@@ -100,6 +101,9 @@ func : FUNCTION ID {
     insert_symbol($2, $8->type, num_param);
     num_param = 1;
     type_return = $8->type;
+    if(strcmp($8->type, "void") == 0){
+        has_return = true;
+    }
 } L_K stmts R_K  {
     if(!has_return){
         yyerror("ERRO DE RETORNO DA FUNCAO");
@@ -159,6 +163,7 @@ stmt :                                      {$$ = "\n";}
     |   read                                {$$ = $1;}
     |   if                                  {$$ = $1;}
     |   while                               {$$ = $1;}
+    |   func_call                           {$$ = concate(2, $1->id, ";\n");}
     ;
 
 decl : 	type idlist {
@@ -544,48 +549,6 @@ read : READ L_P ID R_P                  {
     }
 }
     ;
-
-/* if : IF L_P expr {
-    if(strcmp($3->type, "boolean") != 0){
-        yyerror("A CONDICAO DE UM IF DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
-        free($3);
-        exit(0);
-    }
-} R_P L_K {
-    count_selection++;
-    char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "if%d", count_selection);
-    push_stack(&SCOPE_STACK, var_scope);
-} stmts R_K {
-    char var_skip[MAXSIZE_STRING];
-    sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
-    $$ = concate(9, "if (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\t", var_skip, ":\n");
-    pop_stack(&SCOPE_STACK);
-    free($3);
-    free($8);
-}
-    ;
-
-while : WHILE L_P expr {
-    if(strcmp($3->type, "boolean") != 0){
-        yyerror("A CONDICAO DE UM WHILE DE DEVE SER (OU RESULTAR EM) UM BOOLEAN");
-        free($3);
-        exit(0);
-    }
-} R_P L_K {
-    count_selection++;
-    char var_scope[MAXSIZE_STRING];
-    sprintf(var_scope, "while%d", count_selection);
-    push_stack(&SCOPE_STACK, var_scope);
-} stmts R_K {
-    char var_skip[MAXSIZE_STRING];
-    sprintf(var_skip, "%s_skip", top_stack(&SCOPE_STACK));
-    $$ = concate(12, top_stack(&SCOPE_STACK), ":\n\tif (!(", $3->id, ")) goto ", var_skip, ";\n\t{\n", $8, "\t}\n\tgoto ", top_stack(&SCOPE_STACK), ";\n\t", var_skip, ":\n");
-    pop_stack(&SCOPE_STACK);
-    free($3);
-    free($8);
-}
-    ; */
 
 if : IF L_P expr {
     if(strcmp($3->type, "boolean") != 0){

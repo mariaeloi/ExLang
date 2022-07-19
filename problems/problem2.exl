@@ -1,11 +1,28 @@
 ExL problema2
 
+number i_1, i_2, i_3, i_4;
+
+function integrar(number a): void
+{
+    if(a >= 0 && a <= 25){
+        i_1 = i_1 + 1;
+    };
+    if(a >= 26 && a <= 50){
+        i_2 = i_2 + 1;
+    }; 
+    if(a >= 51 && a <= 75){
+        i_3 = i_3 + 1;
+    };
+    if(a >= 76 && a <= 100){
+        i_4 = i_4 + 1;
+    };
+}
+
 function main(): number
 {
 
     number a;
     a = 0;
-    number i_1, i_2, i_3, i_4;
     i_1 = 0;
     i_2 = 0;
     i_3 = 0;
@@ -13,19 +30,7 @@ function main(): number
 
     while(a >= 0){
         read(a);
-        
-        if(a >= 0 && a <= 25){
-            i_1 = i_1 + 1;
-        };
-        if(a >= 26 && a <= 50){
-            i_2 = i_2 + 1;
-        }; 
-        if(a >= 51 && a <= 75){
-            i_3 = i_3 + 1;
-        };
-        if(a >= 76 && a <= 100){
-            i_4 = i_4 + 1;
-        };
+        integrar(a);
     };
 
     print(i_1);

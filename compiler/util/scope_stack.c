@@ -23,7 +23,7 @@ void pop_stack(struct Stack* stack) {
     if (stack->top == - 1) {
         printf("SCOPE_STACK vazia\n");
     } else {
-        // printf("SCOPE_STACK.pop(): %s\n", SCOPE_STACK.stack[SCOPE_STACK.top]);
+        //printf("SCOPE_STACK.pop(): %s\n", SCOPE_STACK.stack[SCOPE_STACK.top]);
         stack->top--;
     }
 }
@@ -40,10 +40,10 @@ int size_stack(struct Stack* stack) {
 
 char* top_stack_k(struct Stack* stack, int k) {
     if(k > stack->top) {
-        printf("null\n");
+        //printf("null\n");
         return NULL;
     }
-    printf("top k %s, k %d\n", stack->stack[k], k);
+    //printf("top k %s, k %d\n", stack->stack[k], k);
     // int index = stack->top
     return stack->stack[k];
 }
