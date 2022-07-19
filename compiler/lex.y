@@ -63,7 +63,8 @@ int count_selection = 0;
 
 prog : EXL ID {
             push_stack(&SCOPE_STACK, "0");} 
-        body {create_file($2, $4); 
+        body {
+        create_file($2, $4); 
         free($4);
         }
     ;
@@ -103,6 +104,9 @@ func : FUNCTION ID {
         has_return = true;
     }
     type_return = $8->type;
+    if(strcmp($8->type, "void") == 0){
+        has_return = true;
+    }
 } L_K stmts R_K  {
     if(!has_return){
         yyerror("ERRO DE RETORNO DA FUNCAO");
