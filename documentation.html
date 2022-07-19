@@ -4,22 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation Exl</title>
+    <title>Documentação ExL</title>
 </head>
 <body>
     <h1>Documentação Exl</h1>
     <p>
-        Este documento apresenta todas as características da linguagem desenvolvida, Exl,
+        Este documento apresenta todas as características da linguagem desenvolvida, ExL,
         demonstrando todas as etapas de implementação feitas no compilador.
     </p>
     <p>
         O processo de desenvolvimento do compilador foi dividido em três etapas fundamentais:
         <ul>
             <li><a href="#lexico">Desenvolvimento do analisador léxico</a></li>
-            <li>Desenvolvimento do analisador sintático</li>
-            <li>Desenvolvimento do analisador semântico</li>
+            <li><a href="#sintatico">Desenvolvimento do analisador sintático</a></li>
+            <li><a href="#semantico">Desenvolvimento do analisador semântico</a></li>
         </ul>
-        Cada etapa do desenvolvimento complementa um pouco cada etapa anterior, começando pela identificação dos elementos na gramática, análise da estrutura onde são colocadas e por fim, se os dados apresentados na estrutura tem propriedade/sentido.
+        Cada etapa do desenvolvimento complementa um pouco cada etapa anterior, começando pela identificação dos elementos na gramática, análise da estrutura onde são colocadas e por fim, se os dados apresentados na estrutura tem propriedade/sentido.</br>
+        Além disso, há <a href="#instrucoes">Instruções de Uso</a> no final da Documentação.
     </p>
     <hr>
 
@@ -47,9 +48,9 @@
             <li>function</li>
             <li>print</li>
             <li>read</li>
-            <li>Exl</li>
+            <li>ExL</li>
             <li>true</li>
-            <li>flase</li>
+            <li>false</li>
         </ul>
         A identificação de identificadores, tanto de funções como de variáveis, segue a regra de restrição para serem compreendidos: <i>Deve começar com uma letra minúscula.</i>
         <br>
@@ -123,7 +124,7 @@
             <li><b>while</b> : WHILE L_P expr_logic R_P L_K stmts R_K</li>
         </ul>
         <h4>Formato do programa</h4>
-        O programa segue uma estrutura de implementação única, onde em primeiro lugar é feita a declaração do nome do programa com "Exl 'nome do programa'", depois são feitas as declarações de variáveis globais, depois são criar todas as funçõeos e posteriormente, declarada a função main.
+        O programa segue uma estrutura de implementação única, onde em primeiro lugar é feita a declaração do nome do programa com "ExL 'nome do programa'", depois são feitas as declarações de variáveis globais, logo após são criadas todas as funçõeos e posteriormente, declarada a função main.
         <br>
         Segue o seguinte modelo:<br>
         <code>
@@ -202,7 +203,7 @@
     </p>
     <hr>
 
-    <h2>Instruções de uso</h2>
+    <h2 id="instrucoes">Instruções de uso</h2>
     <p>
         O projeto do compilador é composto por cinco arquivos ao total, presentes na pasta compiler:
 
@@ -222,11 +223,11 @@
             <li>gcc .\lex.yy.c .\lex.tab.c</li>
         </ol>
 
-        No momento que executar os três comandos em sequência, o arquivo binário <b>a.exe</b> gera gerado. Com ele pode-se compilar algum programa escrito na linguagem Exl. <br>
+        No momento que executar os três comandos em sequência, o arquivo binário <b>a.exe</b> será gerado. Com ele pode-se compilar algum programa escrito na linguagem ExL. <br>
         Para compilar utilizando o arquivo binário gerado, deve-se executar seguinte linha de comando:
         <code>.\a.exe < <i>program.exl</i></code><br>
 
-        Ao finalizar o processo de compilação, um arquivo <i>c</i> será gerado contendo um código traduzido em C simplificado do arquivo <i>program.exl</i><br>
+        Ao finalizar o processo de compilação, um arquivo <i>C</i> será gerado contendo um código traduzido em C simplificado do arquivo <i>program.exl</i>, sendo ele nomeado como <i>program.c.</i><br>
         
 
     </p>
